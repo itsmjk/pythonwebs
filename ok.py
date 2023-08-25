@@ -36,7 +36,7 @@ def send_to_group(ad_data):
         # Get the messages from the group sent within the last 60 minutes
         time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=180)
         last_group_messages = []
-        group_messages = client.get_messages(telegram_group_id, limit=10)
+        group_messages = client.get_messages(telegram_group_id, limit=70)
         for message in group_messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
@@ -45,7 +45,7 @@ def send_to_group(ad_data):
         # Get messages from the channel within the last 60 minutes
         entity = client.get_entity('hugebargainsuk')
         last_channel_messages = []
-        messages = client.get_messages(entity, limit=30)
+        messages = client.get_messages(entity, limit=70)
         for message in messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
