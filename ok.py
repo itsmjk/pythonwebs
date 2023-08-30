@@ -119,7 +119,7 @@ def scrape_channel_messages(channel_username):
                         ad_data = ""
 
                         # Use regular expression to find the price with "£" sign in the message
-                        price_pattern = r'£(\d+(\.\d+)?)'
+                        price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
                         price_match = re.search(price_pattern, message_text)  # Use message_text instead of message.message
                         # Check if a match was found
                         if price_match:
