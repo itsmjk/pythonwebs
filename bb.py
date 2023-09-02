@@ -13,7 +13,7 @@ import sys
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']  # Add more channel usernames as needed
-session_name = 'sessoinx1j'
+session_name = 'sessoinx1'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
 
 # Connect to Telegram API
@@ -83,7 +83,8 @@ def send_to_group(ad_data):
         print("Error occurred while sending message to group:", e)
 
 # Calculate the date 24 hours ago from now in UTC timezone
-time_duration_minutes = int(input("Enter the time duration in minutes: "))
+# time_duration_minutes = int(input("Enter the time duration in minutes: "))
+time_duration_minutes = 5
 # Function to scrape messages from a channel and print links
 def scrape_channel_messages(channel_username):
     try:
