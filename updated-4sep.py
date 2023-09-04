@@ -214,7 +214,7 @@ def scrape_channel_messages(channel_username):
                             print_previous_message = True
 
                             # Send the ad data to the specified Telegram group
-                            # send_to_group(ad_data)
+                            send_to_group(ad_data)
                         else:
                             # Reset the flag if the current message does not contain the price
                             print_previous_message = False
