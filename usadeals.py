@@ -120,7 +120,7 @@ def is_link_already_posted(link):
         # Parameters for the API request
         params = {
             'access_token': page_access_token,
-            'limit': 150  # Limit to the last 5 posts
+            'limit': 100  # Limit to the last 5 posts
         }
         # Send a GET request to the API
         deals_already_in_page = []
