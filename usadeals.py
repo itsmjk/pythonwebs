@@ -120,7 +120,7 @@ def is_link_already_posted(link):
         # Parameters for the API request
         params = {
             'access_token': page_access_token,
-            'limit': 100  # Limit to the last 5 posts
+            'limit': 150  # Limit to the last 5 posts
         }
         # Send a GET request to the API
         deals_already_in_page = []
@@ -133,7 +133,7 @@ def is_link_already_posted(link):
             for post in posts_data:
                 post_time = datetime.fromisoformat(post['created_time'].rstrip('Z'))
                 # Check if the post was made within the last 5 hours
-                if (current_time - post_time) > timedelta(hours=3):
+                if (current_time - post_time) > timedelta(hours=24):
                     break
                 deals_already_in_page.append(post)
 
@@ -286,7 +286,7 @@ def scheduled_task():
 
 # Schedule the task to run every 20 minutes
 schedule.every(10).minutes.do(scheduled_task)
-
+print('code started')
 # Run the scheduled task
 while True:
     schedule.run_pending()
