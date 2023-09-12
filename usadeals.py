@@ -128,9 +128,7 @@ def is_link_already_posted(link):
         if response.status_code == 200:
             posts_data = response.json().get('data', [])
             current_time = datetime.now(timezone.utc)
-            current_time = current_time.strftime("%Y-%m-%d %H:%M:%S%z")
             print(current_time)
-            print('latest')
 
             # Iterate through the last 5 posts
             for post in posts_data:
@@ -289,7 +287,7 @@ def scheduled_task():
         sys.exit()  # Exit the program gracefully
 
 # Schedule the task to run every 20 minutes
-schedule.every(1).minutes.do(scheduled_task)
+schedule.every(3).seconds.do(scheduled_task)
 print('code started')
 # Run the scheduled task
 while True:
