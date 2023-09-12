@@ -155,7 +155,7 @@ def is_link_already_posted(link):
             #     break
 
         else:
-            print(f"Error checking if link is already posted: {response.text}")
+            print(f"Response is not 200: {response.text}")
 
     except Exception as e:
         print(f"Error checking if link is already posted: {e}")
