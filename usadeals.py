@@ -28,7 +28,7 @@ conversations_url = f'https://graph.facebook.com/v13.0/{page_id}/conversations'
 # Parameters for the API requests
 params = {
     'access_token': page_access_token,
-    'limit': 3  # Number of conversations to retrieve
+    'limit': 2  # Number of conversations to retrieve
 }
 
 # Function to expand short links
@@ -129,7 +129,6 @@ def is_link_already_posted(link):
         if response.status_code == 200:
             posts_data = response.json().get('data', [])
             current_time = datetime.now(timezone.utc)
-            print(current_time)
 
             # Iterate through the last 5 posts
             for post in posts_data:
@@ -141,7 +140,6 @@ def is_link_already_posted(link):
                         print(f"Error parsing 'created_time': {date_parse_error}")
                         continue  # Skip this post and continue with the next one
 
-                    print(post_time)
                     # Check if the post was made within the last 5 hours
                     if (current_time - post_time) > timedelta(hours=24):
                         break
@@ -184,7 +182,7 @@ def scrape_page_messages():
             conversation_id = conversation['id']
             
             # API endpoint for fetching messages in the conversation
-            url = f'https://graph.facebook.com/v13.0/{conversation_id}?fields=messages.limit(2){{id,message}}&access_token={page_access_token}'
+            url = f'https://graph.facebook.com/v13.0/{conversation_id}?fields=messages.limit(1){{id,message}}&access_token={page_access_token}'
 
             # Send a GET request to the API
             response = requests.get(url)
@@ -295,7 +293,7 @@ def scheduled_task():
         sys.exit()  # Exit the program gracefully
 
 # Schedule the task to run every 20 minutes
-schedule.every(3).seconds.do(scheduled_task)
+schedule.every(10).seconds.do(scheduled_task)
 print('code started')
 # Run the scheduled task
 while True:
