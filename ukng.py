@@ -13,7 +13,7 @@ import sys
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 channel_usernames = ['hugebargainsuk', 'thriftydealsuk', 'rockingdealsuk']  # Add more channel usernames as needed
-session_name = 'sessoinx1'
+session_name = 'sessoinx2'
 telegram_group_id = -918865136  # Replace with the group ID where you want to send the messages
 
 # Connect to Telegram API
