@@ -128,10 +128,14 @@ def is_link_already_posted(link):
         if response.status_code == 200:
             posts_data = response.json().get('data', [])
             current_time = datetime.now(timezone.utc)
+            current_time = current_time.strftime("%Y-%m-%d %H:%M:%S%z").replace("0000", "00:00")
+            print(current_time)
+
 
             # Iterate through the last 5 posts
             for post in posts_data:
                 post_time = datetime.fromisoformat(post['created_time'].rstrip('Z'))
+                print(post_time)
                 # Check if the post was made within the last 5 hours
                 if (current_time - post_time) > timedelta(hours=24):
                     break
@@ -221,7 +225,6 @@ def scrape_page_messages():
                     # Iterate through each deal, modify links, and send them to your Telegram group
                     for deal in deals:
                         modified_deal = modify_links_in_deal(deal)
-                        print(modified_deal)
                         if modified_deal:
                             try:
                                 if '%' in modified_deal:
