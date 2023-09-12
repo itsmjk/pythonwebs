@@ -221,6 +221,7 @@ def scrape_page_messages():
                     # Iterate through each deal, modify links, and send them to your Telegram group
                     for deal in deals:
                         modified_deal = modify_links_in_deal(deal)
+                        print(modified_deal)
                         if modified_deal:
                             try:
                                 if '%' in modified_deal:
@@ -285,7 +286,7 @@ def scheduled_task():
         sys.exit()  # Exit the program gracefully
 
 # Schedule the task to run every 20 minutes
-schedule.every(10).minutes.do(scheduled_task)
+schedule.every(1).minutes.do(scheduled_task)
 print('code started')
 # Run the scheduled task
 while True:
