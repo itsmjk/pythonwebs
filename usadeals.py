@@ -128,9 +128,9 @@ def is_link_already_posted(link):
         if response.status_code == 200:
             posts_data = response.json().get('data', [])
             current_time = datetime.now(timezone.utc)
-            current_time = current_time.strftime("%Y-%m-%d %H:%M:%S%z").replace("0000", "00:00")
+            current_time = current_time.strftime("%Y-%m-%d %H:%M:%S%z")
             print(current_time)
-
+            print('latest')
 
             # Iterate through the last 5 posts
             for post in posts_data:
