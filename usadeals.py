@@ -293,7 +293,7 @@ def scheduled_task():
         sys.exit()  # Exit the program gracefully
 
 # Schedule the task to run every 20 minutes
-schedule.every(10).seconds.do(scheduled_task)
+schedule.every(10).minutes.do(scheduled_task)
 print('code started')
 # Run the scheduled task
 while True:
