@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from dateutil import parser as date_parser
 import re
 import requests
 from telethon.sync import TelegramClient
@@ -132,12 +133,19 @@ def is_link_already_posted(link):
 
             # Iterate through the last 5 posts
             for post in posts_data:
-                post_time = datetime.fromisoformat(post['created_time'].rstrip('Z'))
-                print(post_time)
-                # Check if the post was made within the last 5 hours
-                if (current_time - post_time) > timedelta(hours=24):
-                    break
-                deals_already_in_page.append(post)
+                created_time = post.get('created_time', None)
+                if created_time:
+                    try:
+                        post_time = date_parser.parse(created_time)
+                    except Exception as date_parse_error:
+                        print(f"Error parsing 'created_time': {date_parse_error}")
+                        continue  # Skip this post and continue with the next one
+
+                    print(post_time)
+                    # Check if the post was made within the last 5 hours
+                    if (current_time - post_time) > timedelta(hours=24):
+                        break
+                    deals_already_in_page.append(post)
 
             message_exists = any(link in post['message'] for post in deals_already_in_page)
             if not message_exists:
