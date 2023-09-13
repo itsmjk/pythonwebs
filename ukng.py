@@ -36,7 +36,7 @@ def send_to_group(ad_data):
         # Get the messages from the group sent within the last 60 minutes
         time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=240)
         last_group_messages = []
-        group_messages = client.get_messages(telegram_group_id, limit=4)
+        group_messages = client.get_messages(telegram_group_id, limit=50)
         for message in group_messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
@@ -190,8 +190,8 @@ def scrape_channel_messages(channel_username):
                                             question_mark_index = final_url.find("?")
                                             if question_mark_index != -1:
                                                 final_url = final_url[:question_mark_index]
-                                            # Add the "?tag=hugebargains-21" to the final URL
-                                            final_url = final_url + "?linkCode=ml1&tag=hugebargains-21"
+                                            # Add the "?tag=dealsbargains00-21" to the final URL
+                                            final_url = final_url + "?linkCode=ml1&tag=dealsbargains00-21"
                                             ad_data += "\n" + final_url + "\n"
 
                             if link_count > 1:
@@ -253,7 +253,7 @@ def scheduled_task():
         sys.exit()  # Exit the program gracefully
 
 # Schedule the task to run every 5 seconds
-schedule.every(5).seconds.do(scheduled_task)
+schedule.every(30).seconds.do(scheduled_task)
 
 # Run the scheduled task
 while True:
