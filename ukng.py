@@ -143,6 +143,8 @@ def scrape_channel_messages(channel_username):
 
                             if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
                                 ad_data += f"About {price} via s&s\n"
+                            elif "s&s" in message_text.lower():
+                                    ad_data += f"About {price} \n via s&s\n"
                             elif "sub-n-sav" in message_text.lower():
                                     ad_data += f"About {price} \n cheaper with s&s\n"
                             elif "promotion" in message_text.lower():
