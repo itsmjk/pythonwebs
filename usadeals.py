@@ -91,7 +91,8 @@ def modify_links_in_deal(deal):
         link = expanded_link
         dealcheck = is_link_already_posted(link)
         if dealcheck:
-            return deal
+            # return deal
+            return deal, modified_link
         else:
             return False
 
@@ -144,7 +145,6 @@ def is_link_already_posted(link):
                     if (current_time - post_time) > timedelta(hours=24):
                         break
                     deals_already_in_page.append(post)
-
             message_exists = any(link in post['message'] for post in deals_already_in_page)
             if not message_exists:
                 return True
@@ -228,16 +228,18 @@ def scrape_page_messages():
 
                     # Iterate through each deal, modify links, and send them to your Telegram group
                     for deal in deals:
-                        modified_deal = modify_links_in_deal(deal)
-                        if modified_deal:
+                        result = modify_links_in_deal(deal)
+                        if result is not False:
+                            deal, modified_link = result
                             try:
-                                if '%' in modified_deal:
+                                if '%' in deal:
                                     # send_to_facebook_group(modified_deal)
                                     # client(SendMessageRequest(-928459610, message=modified_deal))
                                     fb_api_url = f'https://graph.facebook.com/v13.0/{page_id}/feed'
                                     fb_params = {
                                         'access_token': page_access_token,
-                                        'message': modified_deal
+                                        'message': deal,
+                                        'link': modified_link
                                     }
                                     fb_response = requests.post(fb_api_url, data=fb_params)
                                     if fb_response.status_code == 200:
