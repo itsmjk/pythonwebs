@@ -297,7 +297,7 @@ def scheduled_task():
         time.sleep(41400)
 
 # Schedule the task to run every 20 minutes
-schedule.every(10).minutes.do(scheduled_task)
+schedule.every(1).minutes.do(scheduled_task)
 print('code started')
 # Run the scheduled task
 while True:
