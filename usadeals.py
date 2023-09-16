@@ -28,7 +28,7 @@ conversations_url = f'https://graph.facebook.com/v13.0/{page_id}/conversations'
 # Parameters for the API requests
 params = {
     'access_token': page_access_token,
-    'limit': 2  # Number of conversations to retrieve
+    'limit': 3  # Number of conversations to retrieve
 }
 
 # Function to expand short links
@@ -182,7 +182,7 @@ def scrape_page_messages():
             conversation_id = conversation['id']
             
             # API endpoint for fetching messages in the conversation
-            url = f'https://graph.facebook.com/v13.0/{conversation_id}?fields=messages.limit(1){{id,message}}&access_token={page_access_token}'
+            url = f'https://graph.facebook.com/v13.0/{conversation_id}?fields=messages.limit(2){{id,message}}&access_token={page_access_token}'
 
             # Send a GET request to the API
             response = requests.get(url)
@@ -243,7 +243,8 @@ def scrape_page_messages():
                                     }
                                     fb_response = requests.post(fb_api_url, data=fb_params)
                                     if fb_response.status_code == 200:
-                                        print("Message posted on your page.")
+                                        print("Message posted on your page. Now wait 300 seconds")
+                                        time.sleep(300)
                                     else:
                                         print("Error posting message on your page:", fb_response.text)
                             except Exception as e:
