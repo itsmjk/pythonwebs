@@ -238,7 +238,8 @@ def scheduled_task():
 
     if uk_start_time <= current_uk_time <= uk_end_time:
         print("Current time is within the specified time range. Stopping the program.")
-        sys.exit()  # Exit the program gracefully
+        # sys.exit()  # Exit the program gracefully
+        time.sleep(30600)
 
 # Schedule the task to run every 5 seconds
 schedule.every(5).seconds.do(scheduled_task)
