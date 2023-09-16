@@ -261,4 +261,4 @@ schedule.every(30).seconds.do(scheduled_task)
 # Run the scheduled task
 while True:
     schedule.run_pending()
-    time.sleep(1)
+    time.sleep(5)
