@@ -288,11 +288,12 @@ def scheduled_task():
 
     # Create UK time objects for 2:00 AM and 2:10 AM
     uk_start_time = current_uk_time.replace(hour=2, minute=30, second=0, microsecond=0)
-    uk_end_time = current_uk_time.replace(hour=2, minute=55, second=0, microsecond=0)
+    uk_end_time = current_uk_time.replace(hour=3, minute=55, second=0, microsecond=0)
 
     if uk_start_time <= current_uk_time <= uk_end_time:
         print("Current time is within the specified time range. Stopping the program.")
-        sys.exit()  # Exit the program gracefully
+        # sys.exit()  # Exit the program gracefully
+        time.sleep(41400)
 
 # Schedule the task to run every 20 minutes
 schedule.every(10).minutes.do(scheduled_task)
