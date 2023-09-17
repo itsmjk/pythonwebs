@@ -182,7 +182,7 @@ def scrape_page_messages():
             conversation_id = conversation['id']
             
             # API endpoint for fetching messages in the conversation
-            url = f'https://graph.facebook.com/v13.0/{conversation_id}?fields=messages.limit(1){{id,message}}&access_token={page_access_token}'
+            url = f'https://graph.facebook.com/v13.0/{conversation_id}?fields=messages.limit(2){{id,message}}&access_token={page_access_token}'
 
             # Send a GET request to the API
             response = requests.get(url)
@@ -229,7 +229,7 @@ def scrape_page_messages():
                     # Iterate through each deal, modify links, and send them to your Telegram group
                     for deal in deals:
                         result = modify_links_in_deal(deal)
-                        if result is not False:
+                        if result is not None and result is not False:
                             deal, modified_link = result
                             try:
                                 if '%' in deal:
