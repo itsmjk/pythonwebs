@@ -40,7 +40,8 @@ def send_to_group(ad_data):
         for message in group_messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
-            last_group_messages.append(message)
+            if message.text is not None:
+                last_group_messages.append(message)
 
         # # Get messages from the channel within the last 60 minutes
         # entity = client.get_entity('hugebargainsuk')
