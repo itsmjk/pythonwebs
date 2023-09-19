@@ -19,7 +19,7 @@ import sys
 # client.start(phone_number)
 
 # Replace with your Page Access Token and Page ID
-page_access_token = 'EAALlrgaLPWkBO9KZAQwNtiS2FYnfap8vZCx6yMN9PlOV7cRE3D4WFekx92rsk0ZCeVEO4TVpKUX9dwxsNT1pvznJ5NYhkUL4rdBLxpLSiSvyGawTtomqkqdGAZAbW9l6qTGsDgJ0QS9EvrjPq4oaFXGRUQicRDNdY7d2aUszeE2ny2voGYSd0aurPeUvUDd6'
+page_access_token = 'EAAU1c5aXSKMBO3SJ54koyWwJ1PGUMHRFgncRH9qLYVP22bLkT5o1iBhBY17FDXTbtysmVRSsLR2VuUkVZBBxXCk6POqLpnkuiuCnp3oxjGbH0xPvBrd4lw40mkBZA8VZB1sPJ4O3f4djKorkE5KLmfDSGEf9qVZCVb0ZCyYtku71FHLI0HbtHRQ40W5413DCk'
 page_id = '101450682659753'
 
 # Define the API endpoint URLs
@@ -243,10 +243,24 @@ def scrape_page_messages():
                                     }
                                     fb_response = requests.post(fb_api_url, data=fb_params)
                                     if fb_response.status_code == 200:
-                                        print("Message posted on your page. Now wait 300 seconds")
-                                        time.sleep(300)
+                                        print("Message posted on your page.")
                                     else:
                                         print("Error posting message on your page:", fb_response.text)
+
+                                    #post to group
+                                    group_id = 375273304559842
+                                    fb_group_api_url = f'https://graph.facebook.com/v13.0/{group_id}/feed'
+                                    fb_group_params = {
+                                        'access_token': page_access_token,
+                                        'message': deal,
+                                        'link': modified_link
+                                    }
+                                    fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
+                                    if fb_group_response.status_code == 200:
+                                        print(f"Message posted on the Facebook group. Now wait 300 seconds")
+                                        time.sleep(300)
+                                    else:
+                                        print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
                             except Exception as e:
                                 print(f"Error sending deal: {e}")
                         else:
