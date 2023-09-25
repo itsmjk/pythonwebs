@@ -34,7 +34,7 @@ def resolve_short_link(short_link):
 def send_to_group(ad_data):
     try:
         # Get the messages from the group sent within the last 60 minutes
-        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=120)
+        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=10)
         last_group_messages = []
         group_messages = client.get_messages(telegram_group_id, limit=70)
         for message in group_messages:
