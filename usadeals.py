@@ -88,6 +88,8 @@ def modify_links_in_deal(deal):
         # Replace the original URL with the modified one in the deal text
         deal = deal.replace(url, modified_link)
         deal += "\n #ad \n"
+        new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+        deal = new_text + deal
         link = expanded_link
         dealcheck = is_link_already_posted(link)
         if dealcheck:
