@@ -13,7 +13,8 @@ import sys
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']  # Add more channel usernames as needed
-session_name = 'sessoinx1j'
+session_name = 'sessoinx4j'
+mychannel = 'cryptoliontg'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
 
 # Connect to Telegram API
@@ -34,16 +35,17 @@ def resolve_short_link(short_link):
 def send_to_group(ad_data):
     try:
         # Get the messages from the group sent within the last 60 minutes
-        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=240)
+        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=200)
         last_group_messages = []
         group_messages = client.get_messages(telegram_group_id, limit=70)
         for message in group_messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
-            last_group_messages.append(message)
+            if message.text is not None:
+                last_group_messages.append(message)
 
         # Get messages from the channel within the last 60 minutes
-        entity = client.get_entity('hugebargainsuk')
+        entity = client.get_entity('cryptoliontg')
         last_channel_messages = []
         messages = client.get_messages(entity, limit=70)
         for message in messages:
@@ -72,11 +74,15 @@ def send_to_group(ad_data):
         
         # Check if the link exists in the last messages within the last 60 minutes
         message_exists = any(link in message.text for message in all_last_messages)
+        # Replace "hugebargains-21" with "ukdeals47-21"
+        for_channel = ad_data
         
         if not message_exists:
             # If the message is not already present, send it
-            client.send_message(telegram_group_id, ad_data)
-            print("Message sent to the group.")
+            # client.send_message(telegram_group_id, ad_data)
+            # print("Message sent to the group.")
+            client.send_message(mychannel, for_channel)
+            print("Message sent to the Channel.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
     except Exception as e:
@@ -101,7 +107,6 @@ def scrape_channel_messages(channel_username):
 
         # Variables to keep track of the previous message and whether to print the previous message or not
         previous_message = None
-        print_previous_message = False
 
         for message in messages:
             # Check if the message has content
@@ -117,8 +122,6 @@ def scrape_channel_messages(channel_username):
                     # Check if the message was sent within the last 24 hours
                     if message.date.replace(tzinfo=timezone.utc) >= time_since:
                         ad_data = ""
-
-                        # Use regular expression to find the price with "£" sign in the message
                         # price_pattern = r'£(\d+(\.\d+)?)'
                         # price_pattern = r'\b(\d+)p\b'
                         price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
@@ -127,43 +130,42 @@ def scrape_channel_messages(channel_username):
                         if price_match:
                             if price_match.group(1):
                                 price = price_match.group(1)
+                                price = f"£{price}\n"
                             elif price_match.group(3):
                                 price = price_match.group(3)
-                            # Check if the message contains the word "subscribe" (case-insensitive)
+                                price = f"{price}p\n"
+
                             if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
-                                ad_data += f"About £{price} via s&s\n"
+                                ad_data += f"About {price} via s&s\n"
                             elif "sub-n-sav" in message_text.lower():
-                                ad_data += f"About £{price} \n cheaper with s&s\n"
+                                    ad_data += f"About {price} \n cheaper with s&s\n"
                             elif "promotion" in message_text.lower():
-                                ad_data += f"About £{price} via on screen promotion\n"
+                                ad_data += f"About {price} via on screen promotion\n"
                             elif "bogof" in message_text.lower():
-                                ad_data += f"BOGOF Add 2 \n About £{price} \n"
+                                ad_data += f"BOGOF Add 2 \n About {price} \n"
                             elif "lightning deal" in message_text.lower():
                                 if "promo" in message_text.lower():
-                                    ad_data += f"About £{price} via lightning deal & promo\n"
+                                    ad_data += f"About {price} via lightning deal & promo\n"
                                 else:
-                                    ad_data += f"About £{price} via lightning deal\n"
+                                    ad_data += f"About {price} via lightning deal\n"
                             else:
-                                ad_data += f"About £{price}\n"
+                                ad_data += f"About {price}\n"
                             print("\n" + price)
 
                             # Check if the message contains the word "code" (case-insensitive)
-                            if "code" in message_text.lower():
+                            if "code" in message_text.lower() or "promo" in message_text.lower():
                                 # Print the previous message if it exists and meets the condition to be printed
-                                    if len(previous_message) > 9:
-                                        break
-                                    elif (previous_message and print_previous_message):
+                                    if previous_message and len(previous_message) < 11:
                                         ad_data += "Code " + previous_message + "\n"
+                                        print(' if suc')
                                     else:
                                         code_match = re.search(r'code[\s:_;\-\_]*([a-zA-Z\d]{8})', message_text.lower())
                                         if code_match:
                                             ad_data += "Code " + code_match.group(1).upper() + "\n"
-                            
-                            # Check if the message contains the word "promo" (case-insensitive)
-                            elif "promo" in message_text.lower():
-                                # Print the previous message if it exists and meets the condition to be printed
-                                    if previous_message and print_previous_message:
-                                        ad_data += "Code " + previous_message + "\n"
+                                            ky = "Code " + code_match.group(1).upper() + "\n"
+                                            print(ky)
+                                        else:
+                                            pass
 
                             # Check if the message contains the word "voucher" (case-insensitive)
                             if "voucher" in message_text.lower():
@@ -183,7 +185,7 @@ def scrape_channel_messages(channel_username):
                                             if question_mark_index != -1:
                                                 final_url = final_url[:question_mark_index]
                                             # Add the "?tag=hugebargains-21" to the final URL
-                                            final_url = final_url + "?linkCode=ml1&tag=hugebargains-21"
+                                            final_url = final_url + "?linkCode=ml1&tag=ukdeals47-21"
                                             ad_data += "\n" + final_url + "\n"
 
                             if link_count > 1:
@@ -193,14 +195,11 @@ def scrape_channel_messages(channel_username):
 
                             # Append the message data with the channel name to the list
                             message_data.append((channel_username, message.id, ad_data))
-                            # Set the flag to print the previous message
-                            print_previous_message = True
 
                             # Send the ad data to the specified Telegram group
                             send_to_group(ad_data)
                         else:
-                            # Reset the flag if the current message does not contain the price
-                            print_previous_message = False
+                            pass
 
                 # Update the previous message with the current message
                 previous_message = message_text
@@ -245,7 +244,8 @@ def scheduled_task():
 
     if uk_start_time <= current_uk_time <= uk_end_time:
         print("Current time is within the specified time range. Stopping the program.")
-        sys.exit()  # Exit the program gracefully
+        # sys.exit()  # Exit the program gracefully
+        time.sleep(30600)
 
 # Schedule the task to run every 5 seconds
 schedule.every(5).seconds.do(scheduled_task)
