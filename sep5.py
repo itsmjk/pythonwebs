@@ -117,9 +117,8 @@ def scrape_channel_messages(channel_username):
                     # Check if the message was sent within the last 24 hours
                     if message.date.replace(tzinfo=timezone.utc) >= time_since:
                         ad_data = ""
-                        # price_pattern = r'£(\d+(\.\d+)?)'
-                        # price_pattern = r'\b(\d+)p\b'
-                        price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
+                        # price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
+                        price_pattern = r'(?:£(\d+(,\d+)*(\.\d+)?)|(?<!\S)(\d+(,\d+)*\.\d*p)(?![^\s]))'
                         price_match = re.search(price_pattern, message_text)
 
                         if price_match:
