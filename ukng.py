@@ -130,9 +130,8 @@ def scrape_channel_messages(channel_username):
                     
                     if message.date.replace(tzinfo=timezone.utc) >= time_since:
                         ad_data = ""
-                        # price_pattern = r'£(\d+(\.\d+)?)'
-                        # price_pattern = r'\b(\d+)p\b'
-                        price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
+                        # price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
+                        price_pattern = r'(?:£(\d+(,\d+)*(\.\d+)?)|(?<!\S)(\d+(,\d+)*\.\d*p)(?![^\s]))'
                         price_match = re.search(price_pattern, message_text)
                         if price_match:
                             if price_match.group(1):
