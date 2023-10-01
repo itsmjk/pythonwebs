@@ -142,22 +142,22 @@ def scrape_channel_messages(channel_username):
                                 price = f"{price}p\n"
 
                             if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
-                                ad_data += f"About {price} via s&s\n"
+                                ad_data += f"About {price} 🔥 via s&s\n"
                             elif "s&s" in message_text.lower():
-                                    ad_data += f"About {price} via s&s\n"
+                                    ad_data += f"About {price} 🔥 via s&s\n"
                             elif "sub-n-sav" in message_text.lower():
-                                    ad_data += f"About {price} cheaper with s&s\n"
+                                    ad_data += f"About {price} 🔥 cheaper with s&s\n"
                             elif "promotion" in message_text.lower():
-                                ad_data += f"About {price} via on screen promotion\n"
+                                ad_data += f"About {price} 🔥 via on screen promotion\n"
                             elif "bogof" in message_text.lower():
-                                ad_data += f"BOGOF Add 2 \nAbout {price}\n"
+                                ad_data += f"BOGOF Add 2 \nAbout {price} 🔥\n"
                             elif "lightning deal" in message_text.lower():
                                 if "promo" in message_text.lower():
-                                    ad_data += f"About {price} via lightning deal & promo\n"
+                                    ad_data += f"About {price} 🔥 via lightning deal & promo\n"
                                 else:
-                                    ad_data += f"About {price} via lightning deal\n"
+                                    ad_data += f"About {price} 🔥 via lightning deal\n"
                             else:
-                                ad_data += f"About {price}\n"
+                                ad_data += f"About {price} 🔥\n"
                             print("\n" + price)
 
                             # Check if the message contains the word "code" (case-insensitive)
@@ -174,7 +174,7 @@ def scrape_channel_messages(channel_username):
 
                             # Check if the message contains the word "voucher" (case-insensitive)
                             if "voucher" in message_text.lower():
-                                ad_data += "Apply Voucher\n"
+                                ad_data += "Apply Voucher 💛\n"
 
                             link_count = 0
                             for entity in message.entities:
