@@ -146,11 +146,11 @@ def scrape_channel_messages(channel_username):
                             elif "s&s" in message_text.lower():
                                     ad_data += f"About {price} via s&s\n"
                             elif "sub-n-sav" in message_text.lower():
-                                    ad_data += f"About {price} \n cheaper with s&s\n"
+                                    ad_data += f"About {price} cheaper with s&s\n"
                             elif "promotion" in message_text.lower():
                                 ad_data += f"About {price} via on screen promotion\n"
                             elif "bogof" in message_text.lower():
-                                ad_data += f"BOGOF Add 2 \n About {price} \n"
+                                ad_data += f"BOGOF Add 2 \nAbout {price}\n"
                             elif "lightning deal" in message_text.lower():
                                 if "promo" in message_text.lower():
                                     ad_data += f"About {price} via lightning deal & promo\n"
@@ -165,13 +165,10 @@ def scrape_channel_messages(channel_username):
                                 # Print the previous message if it exists and meets the condition to be printed
                                     if previous_message and len(previous_message) < 11:
                                         ad_data += "Code " + previous_message + "\n"
-                                        print(' if suc')
                                     else:
                                         code_match = re.search(r'code[\s:_;\-\_]*([a-zA-Z\d]{8})', message_text.lower())
                                         if code_match:
                                             ad_data += "Code " + code_match.group(1).upper() + "\n"
-                                            ky = "Code " + code_match.group(1).upper() + "\n"
-                                            print(ky)
                                         else:
                                             pass
 
@@ -194,15 +191,14 @@ def scrape_channel_messages(channel_username):
                                                 final_url = final_url[:question_mark_index]
                                             # Add the "?tag=dealsbargains00-21" to the final URL
                                             final_url = final_url + "?linkCode=ml1&tag=dealsbargains00-21"
-                                            ad_data += "\n" + final_url + "\n"
+                                            ad_data +=  final_url + "\n"
 
                             if link_count > 1:
                                 ad_data += "Add all\n"
 
                             ad_data += "#ad\n"
-
-                            # Append the message data with the channel name to the list
-                            message_data.append((channel_username, message.id, ad_data))
+                            new_data = "**STAY ACTIVE for our Giveaways - Like this post when you see it 👍**"
+                            ad_data = new_data + "\n" + ad_data
                             
                             # Send the ad data to the specified Telegram group
                             send_to_group(ad_data)
