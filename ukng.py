@@ -136,10 +136,10 @@ def scrape_channel_messages(channel_username):
                         if price_match:
                             if price_match.group(1):
                                 price = price_match.group(1)
-                                price = f"£{price}\n"
+                                price = f"£{price}"
                             elif price_match.group(3):
                                 price = price_match.group(3)
-                                price = f"{price}p\n"
+                                price = f"{price}p"
 
                             if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
                                 ad_data += f"About {price} 🔥 via s&s\n"
