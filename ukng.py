@@ -197,7 +197,7 @@ def scrape_channel_messages(channel_username):
                                 ad_data += "Add all\n"
 
                             ad_data += "#ad\n"
-                            new_data = "**STAY ACTIVE for our Giveaways - Like this post when you see it 👍**"
+                            new_data = "**STAY ACTIVE - Like this post when you see it ✅️**"
                             ad_data = new_data + "\n" + ad_data
                             
                             # Send the ad data to the specified Telegram group
