@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+from dateutil import parser as date_parser
 from telethon import TelegramClient, sync
 from datetime import datetime, timedelta, timezone
 import requests
@@ -10,15 +12,18 @@ import pytz
 import sys
 
 # Replace these variables with your own values
+page_access_token = 'EAAU1c5aXSKMBO3SJ54koyWwJ1PGUMHRFgncRH9qLYVP22bLkT5o1iBhBY17FDXTbtysmVRSsLR2VuUkVZBBxXCk6POqLpnkuiuCnp3oxjGbH0xPvBrd4lw40mkBZA8VZB1sPJ4O3f4djKorkE5KLmfDSGEf9qVZCVb0ZCyYtku71FHLI0HbtHRQ40W5413DCk'
+page_id = '101450682659753'
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']  # Add more channel usernames as needed
-session_name = 'sessoinx1'
+channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons']  # Add more channel usernames as needed
+session_name = 'sessoinx7j'
+mychannel = 'ktest1u38'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
 
 # Connect to Telegram API
 client = TelegramClient(session_name, api_id, api_hash)
-client.start() 
+client.start()
 
 # Function to resolve short links
 def resolve_short_link(short_link):
@@ -34,25 +39,19 @@ def resolve_short_link(short_link):
 def send_to_group(ad_data):
     try:
         # Get the messages from the group sent within the last 60 minutes
-        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=60)
-        last_group_messages = []
-        group_messages = client.get_messages(telegram_group_id, limit=30)
-        for message in group_messages:
-            if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
-                break
-            last_group_messages.append(message)
-
+        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=200)
+        
         # Get messages from the channel within the last 60 minutes
-        entity = client.get_entity('hugebargainsuk')
+        entity = client.get_entity('ktest1u38')
         last_channel_messages = []
-        messages = client.get_messages(entity, limit=30)
+        messages = client.get_messages(entity, limit=70)
         for message in messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
             last_channel_messages.append(message)
 
         # Combine last messages from the group and channel
-        all_last_messages = last_group_messages + last_channel_messages
+        all_last_messages = last_channel_messages
 
         # Extract the link from the ad_data
         link_start = ad_data.find("https://")
@@ -61,7 +60,7 @@ def send_to_group(ad_data):
             link = ad_data[link_start:]
         else:
             link = ad_data[link_start:link_end]
-
+        print(link)
         # Extract the part of the link that starts with '/' and ends with '?'
         link_parts = link.split('/')
         filtered_parts = [part for part in link_parts if '?' in part]
@@ -69,22 +68,131 @@ def send_to_group(ad_data):
             link = filtered_parts[0]
         else:
             link = ""  # If no valid link found, set it to empty
-        
         # Check if the link exists in the last messages within the last 60 minutes
-        message_exists = any(link in message.text for message in all_last_messages)
-        
+        message_exists = any(link in message.text for message in all_last_messages if message.text)
         if not message_exists:
             # If the message is not already present, send it
-            client.send_message(telegram_group_id, ad_data)
-            print("Message sent to the group.")
+            client.send_message(mychannel, ad_data)
+            print("Message sent to the Channel.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
+
     except Exception as e:
         print("Error occurred while sending message to group:", e)
 
+# Function to modify links in the deal message
+def modify_links_in_deal(deal):
+    # Define a regular expression pattern to match URLs, including amzn.to
+    url_pattern = r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|amzn\.to/[a-zA-Z0-9]+)'
+    
+    # Find all URLs in the deal text
+    urls = re.findall(url_pattern, deal)
+    
+    # Replace each URL with the modified version
+    for url in urls:
+        # Expand the short link
+        expanded_link = expand_short_link(url)
+        print(expanded_link)
+        # Modify the link as needed
+        modified_link = expanded_link + "?linkCode=ml1&tag=bigdeal09a-20"
+        # Replace the original URL with the modified one in the deal text
+        deal = deal.replace(url, modified_link)
+        deal += "\n #ad \n"
+        # new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+        # deal = new_text + deal
+        link = expanded_link
+        dealcheck = is_link_already_posted(link)
+        if dealcheck:
+            # return deal
+            return deal, modified_link
+        else:
+            return False
+
+def is_link_already_posted(link):
+    try:
+        # Define the Facebook API endpoint URL for the page's feed
+        fb_api_url = f'https://graph.facebook.com/v13.0/{page_id}/feed'
+
+        # Parameters for the API request
+        params = {
+            'access_token': page_access_token,
+            'limit': 100  # Limit to the last 5 posts
+        }
+        # Send a GET request to the API
+        deals_already_in_page = []
+        response = requests.get(fb_api_url, params=params)
+        if response.status_code == 200:
+            posts_data = response.json().get('data', [])
+            current_time = datetime.now(timezone.utc)
+
+            # Iterate through the last 5 posts
+            for post in posts_data:
+                created_time = post.get('created_time', None)
+                if created_time:
+                    try:
+                        post_time = date_parser.parse(created_time)
+                    except Exception as date_parse_error:
+                        print(f"Error parsing 'created_time': {date_parse_error}")
+                        continue  # Skip this post and continue with the next one
+
+                    # Check if the post was made within the last 5 hours
+                    if (current_time - post_time) > timedelta(hours=24):
+                        break
+                    deals_already_in_page.append(post)
+            message_exists = any(link in post['message'] for post in deals_already_in_page)
+            if not message_exists:
+                return True
+            else:
+                return False
+
+        else:
+            print(f"Response is not 200: {response.text}")
+
+    except Exception as e:
+        print(f"Error checking if link is already posted: {e}")
+
+    return False
+
+# Function to expand short links
+def expand_short_link(short_link):
+    try:
+        if short_link.startswith("amzn.to"):
+            short_link = "https://" + short_link  # Prepend http:// to amzn.to links
+        response = requests.head(short_link, allow_redirects=True)
+        expanded_link = response.url
+
+        # Find the index of the first occurrence of 8 or more consecutive capital letters or digits
+        match = re.search(r'[A-Z0-9]{8,}', expanded_link)
+        if match:
+            start_index = match.start()
+        else:
+            start_index = 0
+
+        # Find the index of the first "?" character after the start_index
+        question_mark_index = expanded_link[start_index:].find("?")
+        
+        # Find the index of the first "/" character after the start_index
+        slash_index = expanded_link[start_index:].find("/")
+
+        if question_mark_index != -1 and slash_index != -1:
+            # Determine the position of the first occurrence of "?" or "/"
+            position = min(question_mark_index, slash_index) + start_index
+        elif question_mark_index != -1:
+            position = question_mark_index + start_index
+        elif slash_index != -1:
+            position = slash_index + start_index
+        else:
+            position = len(expanded_link)
+
+        modified_link = expanded_link[:position]
+
+        return modified_link
+    except Exception as e:
+        print(f"Error expanding short link: {e}")
+        return short_link
+
 # Calculate the date 24 hours ago from now in UTC timezone
-# time_duration_minutes = int(input("Enter the time duration in minutes: "))
-time_duration_minutes = 5
+time_duration_minutes = 300
 # Function to scrape messages from a channel and print links
 def scrape_channel_messages(channel_username):
     try:
@@ -94,115 +202,110 @@ def scrape_channel_messages(channel_username):
         time_since = datetime.now(timezone.utc) - timedelta(minutes=time_duration_minutes)
 
         # Get a larger number of messages from the channel (e.g., 1000)
-        messages = client.get_messages(entity, limit=100)
-
-        # List to store the data for each message
-        message_data = []
-
-        # Variables to keep track of the previous message and whether to print the previous message or not
-        previous_message = None
-        print_previous_message = False
+        messages = client.get_messages(entity, limit=90)
 
         for message in messages:
-            # Check if the message has content
             if message.message:
-                # Check if the message contains the hyphen line "-------"
-                if "-------" in message.message:
-                    # Split the message by the hyphen line and take the part before it
-                    message_text = message.message.split("-------")[0].strip()
-                else:
+                if message.date.replace(tzinfo=timezone.utc) >= time_since:
                     message_text = message.message
-                # Check if the message contains a link
-                if message.entities and any(isinstance(entity, MessageEntityUrl) for entity in message.entities):
-                    # Check if the message was sent within the last 24 hours
-                    if message.date.replace(tzinfo=timezone.utc) >= time_since:
-                        ad_data = ""
-
-                        # Use regular expression to find the price with "£" sign in the message
-                        price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
-                        price_match = re.search(price_pattern, message_text)  # Use message_text instead of message.message
-                        # Check if a match was found
-                        if price_match:
-                            # Get the price from the match object
-                            price = price_match.group(1)
-                            # Check if the message contains the word "subscribe" (case-insensitive)
-                            if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
-                                ad_data += f"About £{price} via subscribe & save\n"
-                            elif "promotion" in message_text.lower():
-                                ad_data += f"About £{price} via on screen promotion\n"
-                            elif "lightning deal" in message_text.lower():
-                                if "promo" in message_text.lower():
-                                    ad_data += f"About £{price} via lightning deal & promo\n"
-                                else:
-                                    ad_data += f"About £{price} via lightning deal\n"
+                    deal = ''
+                    if channel_username == 'hcstealdealsUS':
+                        # Check if the message text contains a number followed by '%'
+                        match = re.search(r'(\d+)% off', message_text)
+                        if match:
+                            matched_text = match.group(0)  # Get the matched text
+                            percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
+                            if percentage >= 29:  # Check if the percentage is 30% or more
+                                deal += f"About {matched_text} 🔥\n"
                             else:
-                                ad_data += f"About £{price}\n"
-                            print("\n" + price)
-
-                            # Check if the message contains the word "code" (case-insensitive)
-                            if "code" in message_text.lower():
-                                # Print the previous message if it exists and meets the condition to be printed
-                                    if (previous_message and print_previous_message):
-                                        ad_data += "Code " + previous_message + "\n"
-                                    else:
-                                        code_match = re.search(r'code[\s:_;\-\_]*([a-zA-Z\d]{8})', message_text.lower())
-                                        if code_match:
-                                            ad_data += "Code " + code_match.group(1).upper() + "\n"
-                            
-                            # Check if the message contains the word "promo" (case-insensitive)
-                            if "promo" in message_text.lower():
-                                # Print the previous message if it exists and meets the condition to be printed
-                                    if previous_message and print_previous_message:
-                                        ad_data += "Code " + previous_message + "\n"
-
-                            # Check if the message contains the word "voucher" (case-insensitive)
-                            if "voucher" in message_text.lower():
-                                ad_data += "Apply Voucher\n"
-
-                            link_count = 0
-                            for entity in message.entities:
-                                if isinstance(entity, MessageEntityUrl):
-                                    link = message_text[entity.offset:entity.offset + entity.length]  # Use message_text instead of message.message
-                                    # Check if it's a short link and resolve it
-                                    if link.startswith("http"):
-                                        final_url = resolve_short_link(link)
-                                        if final_url:
-                                            link_count += 1
-                                            # Find the index of "?" in the final URL
-                                            question_mark_index = final_url.find("?")
-                                            if question_mark_index != -1:
-                                                final_url = final_url[:question_mark_index]
-                                            # Add the "?tag=hugebargains-21" to the final URL
-                                            final_url = final_url + "?linkCode=ml1&tag=hugebargains-21"
-                                            ad_data += "\n" + final_url + "\n"
-
-                            if link_count > 1:
-                                ad_data += "Add all\n"
-
-                            ad_data += "#ad\n"
-
-                            # Append the message data with the channel name to the list
-                            message_data.append((channel_username, message.id, ad_data))
-                            # Set the flag to print the previous message
-                            print_previous_message = True
-
-                            # Send the ad data to the specified Telegram group
-                            send_to_group(ad_data)
+                                continue
                         else:
-                            # Reset the flag if the current message does not contain the price
-                            print_previous_message = False
+                            continue
+                        if "coupon" in message.message.lower():
+                            deal += "Apply Coupon\n"
 
-                # Update the previous message with the current message
-                previous_message = message_text
+                    elif channel_username == 'USA_Deals_and_Coupons':
+                        # Check if the message contains price information
+                        price_matches = re.findall(r'(\d+\.\d{2})\$', message_text)
+                        if len(price_matches) == 2:
+                            price1 = float(price_matches[0])
+                            price2 = float(price_matches[1])
+                            price_difference = price2 - price1
+                            percentage_reduction = int((price_difference / price2) * 100)
+                            if percentage_reduction >= 29:  # Check if the percentage is 30% or more
+                                deal += f"About {percentage_reduction}% off 🔥\n"
+                            else:
+                                continue
+                        else:
+                            continue
+                        if "coupon" in message.message.lower():
+                            deal += "Apply Coupon\n"
 
-        return message_data
+                    # Check if the message contains a link
+                    match = re.search(r'https?://\S+', message_text)
+                    if match:
+                        found_link = match.group()
+                        final_url = resolve_short_link(found_link)
+                        if "/?" in final_url:
+                            final_url = final_url.replace("/?", "?")
+                        if final_url:
+                            # Find the index of "?" in the final URL
+                            question_mark_index = final_url.find("?")
+                            if question_mark_index != -1:
+                                final_url = final_url[:question_mark_index]
+                            # Add the "?tag=dealsbargains00-21" to the final URL
+                            final_url = final_url + "?linkCode=ml1&tag=Bigdeal09a-20"
+                            deal +=  final_url + "\n"
+                            ad_data = deal
+                            ad_data += "#ad\n"
+                            new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+                            ad_data = new_text + ad_data
+                            # send_to_group(ad_data)
+                            deal = ad_data
+                            result = modify_links_in_deal(deal)
+                            if result is not None and result is not False:
+                                deal, modified_link = result
+                                try:
+                                    if '%' in deal:
+                                        # send_to_facebook_group(modified_deal)
+                                        # client(SendMessageRequest(-928459610, message=modified_deal))
+                                        fb_api_url = f'https://graph.facebook.com/v13.0/{page_id}/feed'
+                                        fb_params = {
+                                            'access_token': page_access_token,
+                                            'message': deal,
+                                            'link': modified_link
+                                        }
+                                        fb_response = requests.post(fb_api_url, data=fb_params)
+                                        if fb_response.status_code == 200:
+                                            print("Message posted on your page.")
+                                        else:
+                                            print("Error posting message on your page:", fb_response.text)
+
+                                        #post to group
+                                        group_id = 375273304559842
+                                        fb_group_api_url = f'https://graph.facebook.com/v13.0/{group_id}/feed'
+                                        fb_group_params = {
+                                            'access_token': page_access_token,
+                                            'message': deal,
+                                            'link': modified_link
+                                        }
+                                        fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
+                                        if fb_group_response.status_code == 200:
+                                            print(f"Message posted on the Facebook group. Now wait 300 seconds")
+                                            time.sleep(300)
+                                        else:
+                                            print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+                                except Exception as e:
+                                    print(f"Error sending deal: {e}")
+                        else:
+                            print("Deal returned FALSE, probably exists")
+
+                    else:
+                        continue
 
     except Exception as e:
         print(f"Error occurred while scraping {channel_username}: {e}")
         return []
-
-# List to store all messages from different channels
-# all_messages_data = []
 
 # Function to schedule the task
 def scheduled_task():
@@ -230,17 +333,18 @@ def scheduled_task():
     current_uk_time = current_time.astimezone(uk_timezone)
 
     # Create UK time objects for 2:00 AM and 2:10 AM
-    uk_start_time = current_uk_time.replace(hour=2, minute=00, second=0, microsecond=0)
-    uk_end_time = current_uk_time.replace(hour=2, minute=10, second=0, microsecond=0)
+    uk_start_time = current_uk_time.replace(hour=2, minute=30, second=0, microsecond=0)
+    uk_end_time = current_uk_time.replace(hour=3, minute=55, second=0, microsecond=0)
 
     if uk_start_time <= current_uk_time <= uk_end_time:
         print("Current time is within the specified time range. Stopping the program.")
-        sys.exit()  # Exit the program gracefully
+        # sys.exit()  # Exit the program gracefully
+        time.sleep(36000)
 
 # Schedule the task to run every 5 seconds
-schedule.every(5).seconds.do(scheduled_task)
+schedule.every(4).minutes.do(scheduled_task)
 
 # Run the scheduled task
 while True:
     schedule.run_pending()
-    time.sleep(1)
+    time.sleep(5)
