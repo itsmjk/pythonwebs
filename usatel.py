@@ -97,7 +97,6 @@ def modify_links_in_deal(deal):
         modified_link = expanded_link + "?linkCode=ml1&tag=bigdeal09a-20"
         # Replace the original URL with the modified one in the deal text
         deal = deal.replace(url, modified_link)
-        deal += "\n #ad \n"
         # new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
         # deal = new_text + deal
         link = expanded_link
