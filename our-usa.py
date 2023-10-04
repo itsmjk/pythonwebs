@@ -7,7 +7,7 @@ api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 session_name = 'sessoinx7a'
 
 # Define a list of source channel usernames
-source_channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons']  # Add your source channel usernames here
+source_channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
 
 destination_channel_username = 'USAamazon_deals'  # Replace with the destination channel's username
 
@@ -126,8 +126,8 @@ async def handle_message(event):
         if "coupon" in message_text.lower():
             deal += "Apply Coupon\n"
 
-    if channel_username == 'harnoli7':
-        print('harnoli')
+    if channel_username == 'xchannnal':
+        print('xchannnal')
         # Check if the message text contains a number followed by '%'
         match = re.search(r'(\d+)% off', message_text)
         if match:
