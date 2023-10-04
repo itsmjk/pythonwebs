@@ -100,7 +100,7 @@ async def handle_message(event):
         if match:
             matched_text = match.group(0)  # Get the matched text
             percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
-            if percentage >= 9:  # Check if the percentage is 30% or more
+            if percentage >= 29:  # Check if the percentage is 30% or more
                 deal += f"About {matched_text} 🔥\n"
             else:
                 return  # Skip this message if the condition is not met
@@ -117,7 +117,7 @@ async def handle_message(event):
             price2 = float(price_matches[1])
             price_difference = price2 - price1
             percentage_reduction = int((price_difference / price2) * 100)
-            if percentage_reduction >= 9:  # Check if the percentage is 30% or more
+            if percentage_reduction >= 29:  # Check if the percentage is 30% or more
                 deal += f"About {percentage_reduction}% off 🔥\n"
             else:
                 return  # Skip this message if the condition is not met
@@ -133,7 +133,7 @@ async def handle_message(event):
         if match:
             matched_text = match.group(0)  # Get the matched text
             percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
-            if percentage >= 9:  # Check if the percentage is 30% or more
+            if percentage >= 29:  # Check if the percentage is 30% or more
                 deal += f"About {matched_text} 🔥\n"
             else:
                 return  # Skip this message if the condition is not met
