@@ -90,7 +90,7 @@ def send_to_group(ad_data):
 
 # Calculate the date 24 hours ago from now in UTC timezone
 # time_duration_minutes = int(input("Enter the time duration in minutes: "))
-time_duration_minutes = 200
+time_duration_minutes = 5
 # Function to scrape messages from a channel and print links
 def scrape_channel_messages(channel_username):
     try:
