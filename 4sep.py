@@ -90,7 +90,7 @@ def send_to_group(ad_data):
 
 # Calculate the date 24 hours ago from now in UTC timezone
 # time_duration_minutes = int(input("Enter the time duration in minutes: "))
-time_duration_minutes = 5
+time_duration_minutes = 200
 # Function to scrape messages from a channel and print links
 def scrape_channel_messages(channel_username):
     try:
@@ -129,26 +129,26 @@ def scrape_channel_messages(channel_username):
                         if price_match:
                             if price_match.group(1):
                                 price = price_match.group(1)
-                                price = f"£{price}\n"
+                                price = f"£{price}"
                             elif price_match.group(3):
                                 price = price_match.group(3)
-                                price = f"{price}p\n"
+                                price = f"{price}p"
 
                             if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
-                                ad_data += f"About {price} via s&s\n"
+                                ad_data += f"About {price} 🔥 via s&s\n"
                             elif "sub-n-sav" in message_text.lower():
-                                    ad_data += f"About {price} \n cheaper with s&s\n"
+                                    ad_data += f"About {price} 🔥 cheaper with s&s\n"
                             elif "promotion" in message_text.lower():
-                                ad_data += f"About {price} via on screen promotion\n"
+                                ad_data += f"About {price} 🔥 via on screen promotion\n"
                             elif "bogof" in message_text.lower():
-                                ad_data += f"BOGOF Add 2 \n About {price} \n"
+                                ad_data += f"BOGOF Add 2 \n About {price} 🔥\n"
                             elif "lightning deal" in message_text.lower():
                                 if "promo" in message_text.lower():
-                                    ad_data += f"About {price} via lightning deal & promo\n"
+                                    ad_data += f"About {price} 🔥 via lightning deal & promo\n"
                                 else:
-                                    ad_data += f"About {price} via lightning deal\n"
+                                    ad_data += f"About {price} 🔥 via lightning deal\n"
                             else:
-                                ad_data += f"About {price}\n"
+                                ad_data += f"About {price} 🔥\n"
                             print("\n" + price)
 
                             # Check if the message contains the word "code" (case-insensitive)
@@ -156,19 +156,17 @@ def scrape_channel_messages(channel_username):
                                 # Print the previous message if it exists and meets the condition to be printed
                                     if previous_message and len(previous_message) < 11:
                                         ad_data += "Code " + previous_message + "\n"
-                                        print(' if suc')
                                     else:
                                         code_match = re.search(r'code[\s:_;\-\_]*([a-zA-Z\d]{8})', message_text.lower())
                                         if code_match:
                                             ad_data += "Code " + code_match.group(1).upper() + "\n"
                                             ky = "Code " + code_match.group(1).upper() + "\n"
-                                            print(ky)
                                         else:
                                             pass
 
                             # Check if the message contains the word "voucher" (case-insensitive)
                             if "voucher" in message_text.lower():
-                                ad_data += "Apply Voucher\n"
+                                ad_data += "Apply Voucher 💛\n"
 
                             link_count = 0
                             for entity in message.entities:
@@ -185,12 +183,15 @@ def scrape_channel_messages(channel_username):
                                                 final_url = final_url[:question_mark_index]
                                             # Add the "?tag=hugebargains-21" to the final URL
                                             final_url = final_url + "?linkCode=ml1&tag=hugebargains-21"
-                                            ad_data += "\n" + final_url + "\n"
+                                            ad_data += final_url + "\n"
 
                             if link_count > 1:
                                 ad_data += "Add all\n"
 
                             ad_data += "#ad\n"
+                            new_data = "**STAY ACTIVE - Like this post when you see it ✅️**"
+                            ad_data = new_data + "\n" + ad_data
+                            # print(ad_data)
 
                             # Append the message data with the channel name to the list
                             message_data.append((channel_username, message.id, ad_data))
