@@ -16,6 +16,7 @@ channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']
 session_name = 'sessoinx3j'
 mychannel = 'cryptoliontg'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
+ourtelgroup_id = -1001968377098
 
 # Connect to Telegram API
 client = TelegramClient(session_name, api_id, api_hash)
@@ -76,6 +77,7 @@ def send_to_group(ad_data):
         message_exists = any(link in message.text for message in all_last_messages)
         # Replace "hugebargains-21" with "ukdeals47-21"
         for_channel = ad_data.replace("hugebargains-21", "ukdeals47-21")
+        for_our_group = ad_data.replace("hugebargains-21", "ukdeals47-21")
         
         if not message_exists:
             # If the message is not already present, send it
@@ -83,6 +85,8 @@ def send_to_group(ad_data):
             print("Message sent to the group.")
             client.send_message(mychannel, for_channel)
             print("Message sent to the Channel.")
+            client.send_message(ourtelgroup_id, for_our_group)
+            print("Message sent to our group.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
     except Exception as e:
