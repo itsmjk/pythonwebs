@@ -38,7 +38,7 @@ def send_to_group(ad_data):
         # Get the messages from the group sent within the last 60 minutes
         time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=200)
         last_group_messages = []
-        group_messages = client.get_messages(telegram_group_id, limit=70)
+        group_messages = client.get_messages(telegram_group_id, limit=80)
         for message in group_messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
@@ -193,8 +193,8 @@ def scrape_channel_messages(channel_username):
                                 ad_data += "Add all\n"
 
                             ad_data += "#ad\n"
-                            new_data = "**STAY ACTIVE - Like this post when you see it ✅️**"
-                            ad_data = new_data + "\n" + ad_data
+                            # new_data = "**STAY ACTIVE - Like this post when you see it ✅️**"
+                            # ad_data = new_data + "\n" + ad_data
                             # print(ad_data)
 
                             # Append the message data with the channel name to the list
