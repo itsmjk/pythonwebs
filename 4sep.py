@@ -16,7 +16,7 @@ channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']
 session_name = 'sessoinx3j'
 mychannel = 'cryptoliontg'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
-ourtelgroup_id = -1001523584369
+ourtelgroup_id = -1001933600058
 
 # Connect to Telegram API
 client = TelegramClient(session_name, api_id, api_hash)
