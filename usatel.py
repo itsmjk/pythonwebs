@@ -257,7 +257,7 @@ def scrape_channel_messages(channel_username):
                             deal +=  final_url + "\n"
                             ad_data = deal
                             ad_data += "#ad\n"
-                            new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+                            new_text = "STAY ACTIVE -Like this post when you see it 👍 \n"
                             ad_data = new_text + ad_data
                             # send_to_group(ad_data)
                             deal = ad_data
