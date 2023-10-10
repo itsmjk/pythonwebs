@@ -1,253 +1,188 @@
-from telethon import TelegramClient, sync
-from datetime import datetime, timedelta, timezone
-import requests
 import re
-from telethon.tl.types import MessageEntityUrl
-import pandas as pd
-import schedule
-import time
-import pytz
-import sys
+import requests
+from telethon.sync import TelegramClient, events
 
-# Replace these variables with your own values
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']  # Add more channel usernames as needed
 session_name = 'sessoinx1j'
-telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
 
-# Connect to Telegram API
+# Define a list of source channel usernames
+source_channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
+
+destination_channel_username = 'usadealsdash'  # Replace with the destination channel's username
+
+# Create a TelegramClient instance
 client = TelegramClient(session_name, api_id, api_hash)
-client.start() 
+print('Connected')
 
-# Function to resolve short links
-def resolve_short_link(short_link):
-    try:
-        response = requests.get(short_link, allow_redirects=True)
-        final_url = response.url
-        return final_url
-    except requests.exceptions.RequestException as e:
-        print("Error occurred while resolving the link:", e)
-        return None
-
-# Function to send the ad data to the specified group
-def send_to_group(ad_data):
-    try:
-        # Get the messages from the group sent within the last 60 minutes
-        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=180)
-        last_group_messages = []
-        group_messages = client.get_messages(telegram_group_id, limit=66)
-        for message in group_messages:
-            if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
-                break
-            last_group_messages.append(message)
-
-        # Get messages from the channel within the last 60 minutes
-        entity = client.get_entity('hugebargainsuk')
-        last_channel_messages = []
-        messages = client.get_messages(entity, limit=66)
-        for message in messages:
-            if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
-                break
-            last_channel_messages.append(message)
-
-        # Combine last messages from the group and channel
-        all_last_messages = last_group_messages + last_channel_messages
-
-        # Extract the link from the ad_data
-        link_start = ad_data.find("https://")
-        link_end = ad_data.find("\n", link_start)
-        if link_end == -1:
-            link = ad_data[link_start:]
+# Function to modify links in the deal message
+def modify_links_in_deal(deal):
+    # Define a regular expression pattern to match URLs, including amzn.to
+    url_pattern = r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|amzn\.to/[a-zA-Z0-9]+)'
+    
+    # Find all URLs in the deal text
+    urls = re.findall(url_pattern, deal)
+    
+    # Replace each URL with the modified version
+    for url in urls:
+        # Expand the short link
+        expanded_link = expand_short_link(url)
+        print(expanded_link)
+        # Modify the link as needed
+        modified_link = expanded_link + "?linkCode=ml1&tag=bigdeal09a-20"
+        # Replace the original URL with the modified one in the deal text
+        deal = deal.replace(url, modified_link)
+        deal += "#ad \n"
+        # new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+        # deal = new_text + deal
+        dealcheck = expanded_link
+        if dealcheck:
+            # return deal
+            return deal, modified_link
         else:
-            link = ad_data[link_start:link_end]
+            return False
 
-        # Extract the part of the link that starts with '/' and ends with '?'
-        link_parts = link.split('/')
-        filtered_parts = [part for part in link_parts if '?' in part]
-        if filtered_parts:
-            link = filtered_parts[0]
+# Function to expand short links
+def expand_short_link(short_link):
+    try:
+        if short_link.startswith("amzn.to"):
+            short_link = "https://" + short_link  # Prepend http:// to amzn.to links
+        response = requests.head(short_link, allow_redirects=True)
+        expanded_link = response.url
+
+        # Find the index of the first occurrence of 8 or more consecutive capital letters or digits
+        match = re.search(r'[A-Z0-9]{8,}', expanded_link)
+        if match:
+            start_index = match.start()
         else:
-            link = ""  # If no valid link found, set it to empty
+            start_index = 0
+
+        # Find the index of the first "?" character after the start_index
+        question_mark_index = expanded_link[start_index:].find("?")
         
-        # Check if the link exists in the last messages within the last 60 minutes
-        message_exists = any(link in message.text for message in all_last_messages)
-        
-        if not message_exists:
-            # If the message is not already present, send it
-            client.send_message(telegram_group_id, ad_data)
-            print("Message sent to the group.")
+        # Find the index of the first "/" character after the start_index
+        slash_index = expanded_link[start_index:].find("/")
+
+        if question_mark_index != -1 and slash_index != -1:
+            # Determine the position of the first occurrence of "?" or "/"
+            position = min(question_mark_index, slash_index) + start_index
+        elif question_mark_index != -1:
+            position = question_mark_index + start_index
+        elif slash_index != -1:
+            position = slash_index + start_index
         else:
-            print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
+            position = len(expanded_link)
+
+        modified_link = expanded_link[:position]
+
+        return modified_link
     except Exception as e:
-        print("Error occurred while sending message to group:", e)
+        print(f"Error expanding short link: {e}")
+        return short_link
 
-# Calculate the date 24 hours ago from now in UTC timezone
-# time_duration_minutes = int(input("Enter the time duration in minutes: "))
-time_duration_minutes = 5
-# Function to scrape messages from a channel and print links
-def scrape_channel_messages(channel_username):
-    try:
-        # Get the entity of the channel
-        entity = client.get_entity(channel_username)
+# Event handler for incoming messages in the source channels
+@client.on(events.NewMessage(chats=source_channel_usernames))
+async def handle_message(event):
+    message_text = event.text
+    message_media = event.media
+    channel_username = event.chat.username
 
-        time_since = datetime.now(timezone.utc) - timedelta(minutes=time_duration_minutes)
+    # Initialize the destination entity (channel or chat)
+    destination_entity = await client.get_entity(destination_channel_username)
 
-        # Get a larger number of messages from the channel (e.g., 1000)
-        messages = client.get_messages(entity, limit=100)
+    # Initialize the 'deal' variable
+    deal = ''
 
-        # List to store the data for each message
-        message_data = []
+    # Apply additional logic for the 'hcstealdealsUS' channel
+    if channel_username == 'hcstealdealsUS':
+        # Check if the message text contains a number followed by '%'
+        match = re.search(r'(\d+)% off', message_text)
+        if match:
+            matched_text = match.group(0)  # Get the matched text
+            percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
+            if percentage >= 19:  # Check if the percentage is 30% or more
+                deal += f"About {matched_text} 🔥\n"
+            else:
+                return  # Skip this message if the condition is not met
+        else:
+            return  # Skip this message if the condition is not met
+        if "coupon" in message_text.lower():
+            deal += "Apply Coupon\n"
 
-        # Variables to keep track of the previous message and whether to print the previous message or not
-        previous_message = None
-        print_previous_message = False
+    if channel_username == 'USA_Deals_and_Coupons':
+        # Check if the message contains price information
+        price_matches = re.findall(r'(\d+\.\d{2})\$', message_text)
+        if len(price_matches) == 2:
+            price1 = float(price_matches[0])
+            price2 = float(price_matches[1])
+            price_difference = price2 - price1
+            percentage_reduction = int((price_difference / price2) * 100)
+            if percentage_reduction >= 19:  # Check if the percentage is 30% or more
+                deal += f"About {percentage_reduction}% off 🔥\n"
+            else:
+                return  # Skip this message if the condition is not met
+        else:
+            return  # Skip this message if the condition is not met
+        if "coupon" in message_text.lower():
+            deal += "Apply Coupon\n"
 
-        for message in messages:
-            # Check if the message has content
-            if message.message:
-                # Check if the message contains the hyphen line "-------"
-                if "-------" in message.message:
-                    # Split the message by the hyphen line and take the part before it
-                    message_text = message.message.split("-------")[0].strip()
-                else:
-                    message_text = message.message
-                # Check if the message contains a link
-                if message.entities and any(isinstance(entity, MessageEntityUrl) for entity in message.entities):
-                    # Check if the message was sent within the last 24 hours
-                    if message.date.replace(tzinfo=timezone.utc) >= time_since:
-                        ad_data = ""
+    if channel_username == 'xchannnal':
+        print('xchannnal')
+        # Check if the message text contains a number followed by '%'
+        match = re.search(r'(\d+)% off', message_text)
+        if match:
+            matched_text = match.group(0)  # Get the matched text
+            percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
+            if percentage >= 19:  # Check if the percentage is 30% or more
+                deal += f"About {matched_text} 🔥\n"
+            else:
+                return  # Skip this message if the condition is not met
+        else:
+            return  # Skip this message if the condition is not met
+        if "coupon" in message_text.lower():
+            deal += "Apply Coupon\n"
 
-                        # Use regular expression to find the price with "£" sign in the message
-                        # price_pattern = r'£(\d+(\.\d+)?)'
-                        price_pattern = r'(?:£(\d+(\.\d+)?)|(?<!\S)(\d+)p(?![^\s]))'
-                        price_match = re.search(price_pattern, message_text)  # Use message_text instead of message.message
-                        # Check if a match was found
-                        if price_match:
-                            # Get the price from the match object
-                            price = price_match.group(1)
-                            # Check if the message contains the word "subscribe" (case-insensitive)
-                            if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
-                                ad_data += f"About £{price} via s&s\n"
-                            elif "sub-n-sav" in message_text.lower():
-                                ad_data += f"About £{price} \n cheaper with s&s\n"
-                            elif "promotion" in message_text.lower():
-                                ad_data += f"About £{price} via on screen promotion\n"
-                            elif "bogof" in message_text.lower():
-                                ad_data += f"BOGOF Add 2 \n About £{price} \n"
-                            elif "lightning deal" in message_text.lower():
-                                if "promo" in message_text.lower():
-                                    ad_data += f"About £{price} via lightning deal & promo\n"
-                                else:
-                                    ad_data += f"About £{price} via lightning deal\n"
-                            else:
-                                ad_data += f"About £{price}\n"
-                            print("\n" + price)
+    # Check if the message contains a link
+    # Check if the message contains a link but not the word "whatsapp"
+    match = re.search(r'https?://(?!.*whatsapp)\S+', message_text)
+    if match:
+    # match = re.search(r'https?://\S+', message_text)
+    # if match:
+        found_link = match.group()
+        final_url = expand_short_link(found_link)
+        if "/?" in final_url:
+            final_url = final_url.replace("/?", "?")
+        if final_url:
+            # Find the index of "?" in the final URL
+            question_mark_index = final_url.find("?")
+            if question_mark_index != -1:
+                final_url = final_url[:question_mark_index]
+            # Add the "?linkCode=ml1&tag=bigdeal09a-20" to the final URL
+            final_url = final_url + "?linkCode=ml1&tag=bigdeal09a-20"
+            deal +=  final_url + "\n"
+            ad_data = deal
+            new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+            ad_data = new_text + ad_data
+            # send_to_group(ad_data)
+            deal = ad_data
+            result = modify_links_in_deal(deal)
+            if result is not None and result is not False:
+                deal, modified_link = result
+                try:
+                    if '%' in deal:
+                        print('done')
+                    #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+                except Exception as e:
+                    print(f"Error sending deal: {e}")
+        else:
+            print("Deal returned FALSE, probably exists")
 
-                            # Check if the message contains the word "code" (case-insensitive)
-                            if "code" in message_text.lower():
-                                # Print the previous message if it exists and meets the condition to be printed
-                                    if len(previous_message) > 9:
-                                        break
-                                    elif (previous_message and print_previous_message):
-                                        ad_data += "Code " + previous_message + "\n"
-                                    else:
-                                        code_match = re.search(r'code[\s:_;\-\_]*([a-zA-Z\d]{8})', message_text.lower())
-                                        if code_match:
-                                            ad_data += "Code " + code_match.group(1).upper() + "\n"
-                            
-                            # Check if the message contains the word "promo" (case-insensitive)
-                            elif "promo" in message_text.lower():
-                                # Print the previous message if it exists and meets the condition to be printed
-                                    if previous_message and print_previous_message:
-                                        ad_data += "Code " + previous_message + "\n"
+    # Send the message to the destination channel without downloading media
+    if message_media:
+        await client.send_message(destination_entity, f"{deal}", file=message_media)
+    else:
+        await client.send_message(destination_entity, f"{deal}")
 
-                            # Check if the message contains the word "voucher" (case-insensitive)
-                            if "voucher" in message_text.lower():
-                                ad_data += "Apply Voucher\n"
-
-                            link_count = 0
-                            for entity in message.entities:
-                                if isinstance(entity, MessageEntityUrl):
-                                    link = message_text[entity.offset:entity.offset + entity.length]  # Use message_text instead of message.message
-                                    # Check if it's a short link and resolve it
-                                    if link.startswith("http"):
-                                        final_url = resolve_short_link(link)
-                                        if final_url:
-                                            link_count += 1
-                                            # Find the index of "?" in the final URL
-                                            question_mark_index = final_url.find("?")
-                                            if question_mark_index != -1:
-                                                final_url = final_url[:question_mark_index]
-                                            # Add the "?tag=hugebargains-21" to the final URL
-                                            final_url = final_url + "?linkCode=ml1&tag=hugebargains-21"
-                                            ad_data += "\n" + final_url + "\n"
-
-                            if link_count > 1:
-                                ad_data += "Add all\n"
-
-                            ad_data += "#ad\n"
-
-                            # Append the message data with the channel name to the list
-                            message_data.append((channel_username, message.id, ad_data))
-                            # Set the flag to print the previous message
-                            print_previous_message = True
-
-                            # Send the ad data to the specified Telegram group
-                            send_to_group(ad_data)
-                        else:
-                            # Reset the flag if the current message does not contain the price
-                            print_previous_message = False
-
-                # Update the previous message with the current message
-                previous_message = message_text
-
-        return message_data
-
-    except Exception as e:
-        print(f"Error occurred while scraping {channel_username}: {e}")
-        return []
-
-# List to store all messages from different channels
-# all_messages_data = []
-
-# Function to schedule the task
-def scheduled_task():
-    # List to store all messages from different channels
-    # all_messages_data = []
-
-    # Run the scraping function for each channel
-    for channel_username in channel_usernames:
-        channel_messages_data = scrape_channel_messages(channel_username)
-        # all_messages_data.extend(channel_messages_data)
-
-    # Create a DataFrame to store the data
-    # df = pd.DataFrame(all_messages_data, columns=["Channel Name", "Message ID", "Ad"])
-
-    # Save the DataFrame to an Excel file
-    # df.to_excel("output.xlsx", index=False)
-
-    print("Scheduled task executed.")
-    current_time = datetime.now(timezone.utc)
-
-    # Define the UK time zone
-    uk_timezone = pytz.timezone('Europe/London')
-
-    # Convert current UTC time to UK time
-    current_uk_time = current_time.astimezone(uk_timezone)
-
-    # Create UK time objects for 2:00 AM and 2:10 AM
-    uk_start_time = current_uk_time.replace(hour=22, minute=00, second=0, microsecond=0)
-    uk_end_time = current_uk_time.replace(hour=22, minute=10, second=0, microsecond=0)
-
-    if uk_start_time <= current_uk_time <= uk_end_time:
-        print("Current time is within the specified time range. Stopping the program.")
-        sys.exit()  # Exit the program gracefully
-
-# Schedule the task to run every 5 seconds
-schedule.every(5).seconds.do(scheduled_task)
-
-# Run the scheduled task
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# Start the client
+with client:
+    client.run_until_disconnected()
