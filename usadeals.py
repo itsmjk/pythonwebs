@@ -260,7 +260,7 @@ def scrape_page_messages():
                                     fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
                                     if fb_group_response.status_code == 200:
                                         print(f"Message posted on the Facebook group. Now wait 300 seconds")
-                                        time.sleep(300)
+                                        time.sleep(780)
                                     else:
                                         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
                             except Exception as e:
@@ -304,16 +304,16 @@ def scheduled_task():
     current_uk_time = current_time.astimezone(uk_timezone)
 
     # Create UK time objects for 2:00 AM and 2:10 AM
-    uk_start_time = current_uk_time.replace(hour=2, minute=30, second=0, microsecond=0)
-    uk_end_time = current_uk_time.replace(hour=3, minute=55, second=0, microsecond=0)
+    # uk_start_time = current_uk_time.replace(hour=2, minute=30, second=0, microsecond=0)
+    # uk_end_time = current_uk_time.replace(hour=3, minute=55, second=0, microsecond=0)
 
-    if uk_start_time <= current_uk_time <= uk_end_time:
-        print("Current time is within the specified time range. Stopping the program.")
-        # sys.exit()  # Exit the program gracefully
-        time.sleep(41400)
+    # if uk_start_time <= current_uk_time <= uk_end_time:
+    #     print("Current time is within the specified time range. Stopping the program.")
+    #     # sys.exit()  # Exit the program gracefully
+    #     time.sleep(41400)
 
 # Schedule the task to run every 20 minutes
-schedule.every(10).minutes.do(scheduled_task)
+schedule.every(15).minutes.do(scheduled_task)
 print('code started')
 # Run the scheduled task
 while True:
