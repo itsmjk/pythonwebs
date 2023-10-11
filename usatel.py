@@ -332,16 +332,16 @@ def scheduled_task():
     current_uk_time = current_time.astimezone(uk_timezone)
 
     # Create UK time objects for 2:00 AM and 2:10 AM
-    uk_start_time = current_uk_time.replace(hour=2, minute=30, second=0, microsecond=0)
-    uk_end_time = current_uk_time.replace(hour=3, minute=55, second=0, microsecond=0)
+    # uk_start_time = current_uk_time.replace(hour=2, minute=30, second=0, microsecond=0)
+    # uk_end_time = current_uk_time.replace(hour=3, minute=55, second=0, microsecond=0)
 
-    if uk_start_time <= current_uk_time <= uk_end_time:
-        print("Current time is within the specified time range. Stopping the program.")
-        # sys.exit()  # Exit the program gracefully
-        time.sleep(36000)
+    # if uk_start_time <= current_uk_time <= uk_end_time:
+    #     print("Current time is within the specified time range. Stopping the program.")
+    #     # sys.exit()  # Exit the program gracefully
+    #     time.sleep(36000)
 
 # Schedule the task to run every 5 seconds
-schedule.every(4).minutes.do(scheduled_task)
+schedule.every(5).minutes.do(scheduled_task)
 
 # Run the scheduled task
 while True:
