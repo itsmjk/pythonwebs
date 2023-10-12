@@ -16,7 +16,7 @@ page_access_token = 'EAAU1c5aXSKMBOzZC7tkbbs91ZCCIbW4hDlr1Ukv0yzkN4hzBxOkNTV9RiV
 page_id = '101450682659753'
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons']  # Add more channel usernames as needed
+channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons', 'deals_shopping_usa']  # Add more channel usernames as needed
 session_name = 'sessoinx7j'
 mychannel = 'ktest1u38'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
@@ -191,7 +191,7 @@ def expand_short_link(short_link):
         return short_link
 
 # Calculate the date 24 hours ago from now in UTC timezone
-time_duration_minutes = 20
+time_duration_minutes = 25
 # Function to scrape messages from a channel and print links
 def scrape_channel_messages(channel_username):
     try:
@@ -233,6 +233,21 @@ def scrape_channel_messages(channel_username):
                             percentage_reduction = int((price_difference / price2) * 100)
                             if percentage_reduction >= 29:  # Check if the percentage is 30% or more
                                 deal += f"About {percentage_reduction}% off 🔥\n"
+                            else:
+                                continue
+                        else:
+                            continue
+                        if "coupon" in message.message.lower():
+                            deal += "Apply Coupon\n"
+                            
+                    elif channel_username == 'deals_shopping_usa':
+                        # Check if the message text contains a number followed by '%'
+                        match = re.search(r'(\d+)%', message_text)
+                        if match:
+                            matched_text = match.group(0)  # Get the matched text
+                            percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
+                            if percentage >= 29:  # Check if the percentage is 30% or more
+                                deal += f"About {matched_text} 🔥\n"
                             else:
                                 continue
                         else:
