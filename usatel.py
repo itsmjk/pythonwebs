@@ -191,7 +191,7 @@ def expand_short_link(short_link):
         return short_link
 
 # Calculate the date 24 hours ago from now in UTC timezone
-time_duration_minutes = 25
+time_duration_minutes = 40
 # Function to scrape messages from a channel and print links
 def scrape_channel_messages(channel_username):
     try:
