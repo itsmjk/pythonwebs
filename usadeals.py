@@ -225,7 +225,7 @@ def scrape_page_messages():
                                 current_deal += line + '\n'
 
                     # Check if the last deal has more than 3 lines and add it to the list of deals
-                    if len(current_deal.split('\n')) > 7:
+                    if len(current_deal.split('\n')) > 3:
                         deals.append(current_deal.strip())
 
                     # Iterate through each deal, modify links, and send them to your Telegram group
