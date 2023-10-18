@@ -19,7 +19,7 @@ import sys
 # client.start(phone_number)
 
 # Replace with your Page Access Token and Page ID
-page_access_token = 'EAAU1c5aXSKMBO8y2whysw8qZCzFinhPIZBawq4BpP6mthbZCIKprs5uZARVny8qiNH3ughK40ZAzbnGOsVZAWAOqOg90pOUfJr0KCnxx9H4rza6GcKtTGZCNo8CyPKZCamdSIOySwggYB4ZCroZCk0RpoKoZAiSPj7OnZCrZBr4FEJQ50LE6oUl503ZCT9Qjwimn6CsQA0'
+page_access_token = 'EAAJaYuHW2EYBO57DziD4T5t5kJhoACZAsg6s6UfKM24XBaeokee0iLdDy6l9np0nXrZAtg7gpXU6gGMdZBokRneNJpZAwkzoElvP1EBUZAbWBIphAU7xxmaHr27k350a7ZBLHZBduidxZBbvKbJjn71WrIZBe5ZBf1g24oOJqZBfr2cACWdXKw8PR6fzZCTBDWP2ICpv'
 page_id = '101450682659753'
 
 # Define the API endpoint URLs
@@ -246,7 +246,7 @@ def scrape_page_messages():
                                     fb_response = requests.post(fb_api_url, data=fb_params)
                                     if fb_response.status_code == 200:
                                         print("Message posted on your page.")
-                                        time.sleep(780)
+                                        # time.sleep(780)
                                     else:
                                         print("Error posting message on your page:", fb_response.text)
 
@@ -261,7 +261,7 @@ def scrape_page_messages():
                                     fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
                                     if fb_group_response.status_code == 200:
                                         print(f"Message posted on the Facebook group. Now wait 300 seconds")
-                                        # time.sleep(780)
+                                        time.sleep(780)
                                     else:
                                         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
                             except Exception as e:
