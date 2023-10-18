@@ -28,7 +28,7 @@ conversations_url = f'https://graph.facebook.com/v13.0/{page_id}/conversations'
 # Parameters for the API requests
 params = {
     'access_token': page_access_token,
-    'limit': 3  # Number of conversations to retrieve
+    'limit': 4  # Number of conversations to retrieve
 }
 
 # Function to expand short links
