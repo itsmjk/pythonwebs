@@ -16,7 +16,7 @@ channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']
 session_name = 'sessoinx3j'
 mychannel = 'cryptoliontg'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
-ourtelgroup_id = -1001933600058
+ourtelgroup_id = -1001500844459
 
 # Connect to Telegram API
 client = TelegramClient(session_name, api_id, api_hash)
@@ -252,7 +252,7 @@ def scheduled_task():
     #     time.sleep(30600)
 
 # Schedule the task to run every 5 seconds
-schedule.every(5).seconds.do(scheduled_task)
+schedule.every(10).seconds.do(scheduled_task)
 
 # Run the scheduled task
 while True:
