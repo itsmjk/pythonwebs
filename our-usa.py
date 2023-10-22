@@ -9,7 +9,7 @@ session_name = 'sessoinx7a'
 # Define a list of source channel usernames
 source_channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
 
-destination_channel_username = 'USAamazon_deals'  # Replace with the destination channel's username
+destination_channel_username = 'usadeals3'  # Replace with the destination channel's username
 
 # Create a TelegramClient instance
 client = TelegramClient(session_name, api_id, api_hash)
@@ -29,7 +29,7 @@ def modify_links_in_deal(deal):
         expanded_link = expand_short_link(url)
         print(expanded_link)
         # Modify the link as needed
-        modified_link = expanded_link + "?linkCode=ml1&tag=kaysdealsusa-20"
+        modified_link = expanded_link + "?linkCode=ml1&tag=usadeals27-20"
         # Replace the original URL with the modified one in the deal text
         deal = deal.replace(url, modified_link)
         deal += "#ad \n"
@@ -158,7 +158,7 @@ async def handle_message(event):
             if question_mark_index != -1:
                 final_url = final_url[:question_mark_index]
             # Add the "?linkCode=ml1&tag=bigdeal09a-20" to the final URL
-            final_url = final_url + "?linkCode=ml1&tag=bigdeal09a-20"
+            final_url = final_url + "?linkCode=ml1&tag=usadeals27-20"
             deal +=  final_url + "\n"
             ad_data = deal
             new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
