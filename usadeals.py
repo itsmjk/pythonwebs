@@ -207,7 +207,7 @@ def scrape_page_messages():
                     deals = []
 
                     # Define a regular expression pattern to match lines that start with a number or a number followed by certain symbols
-                    pattern = r'^\d+[\#\.;,:-]+.*|\d+$'
+                    pattern = r'^\d+[\#\.;,:-🌹]+.*|\d+$'
 
                     # Iterate through each line
                     for line in lines:
