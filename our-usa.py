@@ -7,7 +7,7 @@ api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 session_name = 'sessoinx7a'
 
 # Define a list of source channel usernames
-source_channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
+source_channel_usernames = ['USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
 
 destination_channel_username = 'usadeals3'  # Replace with the destination channel's username
 
