@@ -144,12 +144,13 @@ async def handle_message(event):
 
     # Check if the message contains a link
     # Check if the message contains a link but not the word "whatsapp"
-    match = re.search(r'https?://(?!.*whatsapp)\S+', message_text)
+    match = re.search(r'https?://(?!.*(?:whatsapp|media))\S+', message_text)
     if match:
     # match = re.search(r'https?://\S+', message_text)
     # if match:
         found_link = match.group()
-        final_url = expand_short_link(found_link)
+        # final_url = expand_short_link(found_link)
+        final_url = found_link
         if "/?" in final_url:
             final_url = final_url.replace("/?", "?")
         if final_url:
@@ -165,16 +166,16 @@ async def handle_message(event):
             ad_data = new_text + ad_data
             # send_to_group(ad_data)
             deal = ad_data
-            # deal += "#ad \n"
-            result = modify_links_in_deal(deal)
-            if result is not None and result is not False:
-                deal, modified_link = result
-                try:
-                    if '%' in deal:
-                        print('done')
-                    #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
-                except Exception as e:
-                    print(f"Error sending deal: {e}")
+            deal += "#ad \n"
+            # result = modify_links_in_deal(deal)
+            # if result is not None and result is not False:
+            #     deal, modified_link = result
+            #     try:
+            #         if '%' in deal:
+            #             print('done')
+            #         #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+            #     except Exception as e:
+            #         print(f"Error sending deal: {e}")
         else:
             print("Deal returned FALSE, probably exists")
 
