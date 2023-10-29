@@ -165,18 +165,18 @@ async def handle_message(event):
             ad_data = new_text + ad_data
             # send_to_group(ad_data)
             deal = ad_data
-            deal += "#ad \n"
-        #     result = modify_links_in_deal(deal)
-        #     if result is not None and result is not False:
-        #         deal, modified_link = result
-        #         try:
-        #             if '%' in deal:
-        #                 print('done')
-        #             #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
-        #         except Exception as e:
-        #             print(f"Error sending deal: {e}")
-        # else:
-        #     print("Deal returned FALSE, probably exists")
+            # deal += "#ad \n"
+            result = modify_links_in_deal(deal)
+            if result is not None and result is not False:
+                deal, modified_link = result
+                try:
+                    if '%' in deal:
+                        print('done')
+                    #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+                except Exception as e:
+                    print(f"Error sending deal: {e}")
+        else:
+            print("Deal returned FALSE, probably exists")
 
     # Send the message to the destination channel without downloading media
     if message_media:
