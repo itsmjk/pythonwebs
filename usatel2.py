@@ -13,9 +13,9 @@ import sys
 
 # Replace these variables with your own values
 page_access_token = 'EAAJaYuHW2EYBO57DziD4T5t5kJhoACZAsg6s6UfKM24XBaeokee0iLdDy6l9np0nXrZAtg7gpXU6gGMdZBokRneNJpZAwkzoElvP1EBUZAbWBIphAU7xxmaHr27k350a7ZBLHZBduidxZBbvKbJjn71WrIZBe5ZBf1g24oOJqZBfr2cACWdXKw8PR6fzZCTBDWP2ICpv'
-page_access_token_our = 'EAAU1c5aXSKMBOy2zY31D3cYr964nbdlLDGAqs8XWVxXnpZAYcfirNBZAx6kqo0ylVdWCoBh1BSpO4MZCbNnZBcYtFLVxqV3zdrBaQ8Pq6qaSfIOEzsYRcOggZCzsJPwIN6TQM47b4MZAjOrzceLiI7tsD8nL1HpfZCRQ0cOupfuOK2foydEMsZA27QDMIdDF2xUj'
+page_access_token_our = 'EAAU1c5aXSKMBOZCGq0BwX5W0aFt7I2WvZCGcOypUdXexd05OJ1oAAwHtxFmfSMNlkZBsq8lJBIufY74FP5vamDApZCGRUZB20gIsoxxNOPOGVy9VeqNUAydGaFsaPDF86MzNosrnuZA1dtOu89irT9GLZBxw9RyvC40wdZB7RzEFxBC7ZBZA14P1Xc5r0UknkSkZC6o'
 page_id = '101450682659753'
-page_id_our = '155303577658202'
+page_id_our = '126329840572666'
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons', 'deals_shopping_usa']  # Add more channel usernames as needed
