@@ -311,7 +311,7 @@ def scrape_channel_messages(channel_username):
                                         fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
                                         if fb_group_response.status_code == 200:
                                             print(f"Message posted on the Facebook group. Now wait 360 seconds")
-                                            # time.sleep(360)
+                                            time.sleep(360)
                                         else:
                                             print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
                                         
