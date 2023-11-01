@@ -311,38 +311,38 @@ def scrape_channel_messages(channel_username):
                                         fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
                                         if fb_group_response.status_code == 200:
                                             print(f"Message posted on the Facebook group. Now wait 360 seconds")
-                                            time.sleep(360)
+                                            # time.sleep(360)
                                         else:
                                             print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
                                         
-                                        # #post to Our page
-                                        # fb_api_url = f'https://graph.facebook.com/v13.0/{page_id_our}/feed'
-                                        # fb_params = {
-                                        #     'access_token': page_access_token_our,
-                                        #     'message': deal_our,
-                                        #     'link': modified_link_our
-                                        # }
-                                        # fb_response = requests.post(fb_api_url, data=fb_params)
-                                        # if fb_response.status_code == 200:
-                                        #     print("Message posted on OUR page.")
-                                        #     # time.sleep(360)
-                                        # else:
-                                        #     print("Error posting message on OUR page:", fb_response.text)
+                                        #post to Our page
+                                        fb_api_url = f'https://graph.facebook.com/v13.0/{page_id_our}/feed'
+                                        fb_params = {
+                                            'access_token': page_access_token_our,
+                                            'message': deal_our,
+                                            'link': modified_link_our
+                                        }
+                                        fb_response = requests.post(fb_api_url, data=fb_params)
+                                        if fb_response.status_code == 200:
+                                            print("Message posted on OUR page.")
+                                            # time.sleep(360)
+                                        else:
+                                            print("Error posting message on OUR page:", fb_response.text)
 
-                                        # #post to our group
-                                        # group_id_our = 712288753692244
-                                        # fb_group_api_url = f'https://graph.facebook.com/v13.0/{group_id_our}/feed'
-                                        # fb_group_params = {
-                                        #     'access_token': page_access_token_our,
-                                        #     'message': deal_our,
-                                        #     'link': modified_link_our
-                                        # }
-                                        # fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
-                                        # if fb_group_response.status_code == 200:
-                                        #     print(f"Message posted on OUR Facebook group. Now wait 360 seconds")
-                                        #     time.sleep(360)
-                                        # else:
-                                        #     print(f"Error posting message on OUR Facebook group (ID: {group_id_our}):", fb_group_response.text)
+                                        #post to our group
+                                        group_id_our = 712288753692244
+                                        fb_group_api_url = f'https://graph.facebook.com/v13.0/{group_id_our}/feed'
+                                        fb_group_params = {
+                                            'access_token': page_access_token_our,
+                                            'message': deal_our,
+                                            'link': modified_link_our
+                                        }
+                                        fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
+                                        if fb_group_response.status_code == 200:
+                                            print(f"Message posted on OUR Facebook group. Now wait 360 seconds")
+                                            time.sleep(360)
+                                        else:
+                                            print(f"Error posting message on OUR Facebook group (ID: {group_id_our}):", fb_group_response.text)
                                 except Exception as e:
                                     print(f"Error sending deal: {e}")
                         else:
