@@ -40,17 +40,17 @@ def expand_short_link(short_link):
         expanded_link = response.url
 
         # Find the index of the first occurrence of 8 or more consecutive capital letters or digits
-        match = re.search(r'[A-Z0-9]{8,}', expanded_link)
+        match = re.search(r'[A-Z0-9]{8,}', short_link)
         if match:
             start_index = match.start()
         else:
             start_index = 0
 
         # Find the index of the first "?" character after the start_index
-        question_mark_index = expanded_link[start_index:].find("?")
+        question_mark_index = short_link[start_index:].find("?")
         
         # Find the index of the first "/" character after the start_index
-        slash_index = expanded_link[start_index:].find("/")
+        slash_index = short_link[start_index:].find("/")
 
         if question_mark_index != -1 and slash_index != -1:
             # Determine the position of the first occurrence of "?" or "/"
@@ -60,9 +60,9 @@ def expand_short_link(short_link):
         elif slash_index != -1:
             position = slash_index + start_index
         else:
-            position = len(expanded_link)
+            position = len(short_link)
 
-        modified_link = expanded_link[:position]
+        modified_link = short_link[:position]
 
         return modified_link
     except Exception as e:
@@ -314,7 +314,7 @@ def scheduled_task():
         time.sleep(41400)
 
 # Schedule the task to run every 20 minutes
-schedule.every(15).minutes.do(scheduled_task)
+schedule.every(12).minutes.do(scheduled_task)
 print('code started')
 # Run the scheduled task
 while True:
