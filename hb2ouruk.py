@@ -4,12 +4,14 @@ from telethon.sync import TelegramClient, events
 
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-session_name = 'sessoinx1j'
+session_name = 'sessoinx1'
 
 # Define a list of source channel usernames
-source_channel_usernames = ['hcstealdealsUS', 'USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
+source_channel_usernames = ['hugebargainsuk']  # Add your source channel usernames here
 
-destination_channel_username = 'usadealsdash'  # Replace with the destination channel's username
+destination_channel_username = 'cryptoliontg' # Replace with the destination channel's username
+
+destination_group_username = 'ukdeal31'
 
 # Create a TelegramClient instance
 client = TelegramClient(session_name, api_id, api_hash)
@@ -29,7 +31,7 @@ def modify_links_in_deal(deal):
         expanded_link = expand_short_link(url)
         print(expanded_link)
         # Modify the link as needed
-        modified_link = expanded_link + "?linkCode=ml1&tag=bigdeal09a-20"
+        modified_link = expanded_link + "?linkCode=ml1&tag=usadeals27-20"
         # Replace the original URL with the modified one in the deal text
         deal = deal.replace(url, modified_link)
         deal += "#ad \n"
@@ -89,26 +91,20 @@ async def handle_message(event):
 
     # Initialize the destination entity (channel or chat)
     destination_entity = await client.get_entity(destination_channel_username)
+    destination_entity2 = await client.get_entity(destination_group_username)
 
     # Initialize the 'deal' variable
     deal = ''
 
     # Apply additional logic for the 'hcstealdealsUS' channel
-    if channel_username == 'hcstealdealsUS':
+    if channel_username == 'hugebargainsuk':
         # Check if the message text contains a number followed by '%'
-        match = re.search(r'(\d+)% off', message_text)
-        if match:
-            matched_text = match.group(0)  # Get the matched text
-            percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
-            if percentage >= 19:  # Check if the percentage is 30% or more
-                deal += f"About {matched_text} 🔥\n"
-            else:
-                return  # Skip this message if the condition is not met
+        updated_text = re.sub(r'hugebargains-21', 'ukdeals27-21', message_text)
+        if updated_text:
+            deal = updated_text
         else:
             return  # Skip this message if the condition is not met
-        if "coupon" in message_text.lower():
-            deal += "Apply Coupon\n"
-
+        
     if channel_username == 'USA_Deals_and_Coupons':
         # Check if the message contains price information
         price_matches = re.findall(r'(\d+\.\d{2})\$', message_text)
@@ -117,7 +113,7 @@ async def handle_message(event):
             price2 = float(price_matches[1])
             price_difference = price2 - price1
             percentage_reduction = int((price_difference / price2) * 100)
-            if percentage_reduction >= 19:  # Check if the percentage is 30% or more
+            if percentage_reduction >= 29:  # Check if the percentage is 30% or more
                 deal += f"About {percentage_reduction}% off 🔥\n"
             else:
                 return  # Skip this message if the condition is not met
@@ -126,14 +122,14 @@ async def handle_message(event):
         if "coupon" in message_text.lower():
             deal += "Apply Coupon\n"
 
-    if channel_username == 'xchannnal':
+    if channel_username == 'xchannnalssssssssss':
         print('xchannnal')
         # Check if the message text contains a number followed by '%'
         match = re.search(r'(\d+)% off', message_text)
         if match:
             matched_text = match.group(0)  # Get the matched text
             percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
-            if percentage >= 19:  # Check if the percentage is 30% or more
+            if percentage >= 29:  # Check if the percentage is 30% or more
                 deal += f"About {matched_text} 🔥\n"
             else:
                 return  # Skip this message if the condition is not met
@@ -144,42 +140,45 @@ async def handle_message(event):
 
     # Check if the message contains a link
     # Check if the message contains a link but not the word "whatsapp"
-    match = re.search(r'https?://(?!.*whatsapp)\S+', message_text)
-    if match:
-    # match = re.search(r'https?://\S+', message_text)
+    # match = re.search(r'https?://(?!.*(?:whatsapp|media))\S+', message_text)
     # if match:
-        found_link = match.group()
-        final_url = expand_short_link(found_link)
-        if "/?" in final_url:
-            final_url = final_url.replace("/?", "?")
-        if final_url:
-            # Find the index of "?" in the final URL
-            question_mark_index = final_url.find("?")
-            if question_mark_index != -1:
-                final_url = final_url[:question_mark_index]
-            # Add the "?linkCode=ml1&tag=bigdeal09a-20" to the final URL
-            final_url = final_url + "?linkCode=ml1&tag=bigdeal09a-20"
-            deal +=  final_url + "\n"
-            ad_data = deal
-            new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
-            ad_data = new_text + ad_data
-            # send_to_group(ad_data)
-            deal = ad_data
-            result = modify_links_in_deal(deal)
-            if result is not None and result is not False:
-                deal, modified_link = result
-                try:
-                    if '%' in deal:
-                        print('done')
-                    #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
-                except Exception as e:
-                    print(f"Error sending deal: {e}")
+    # # match = re.search(r'https?://\S+', message_text)
+    # # if match:
+    #     found_link = match.group()
+    #     # final_url = expand_short_link(found_link)
+    #     final_url = found_link
+    #     if "/?" in final_url:
+    #         final_url = final_url.replace("/?", "?")
+    #     if final_url:
+    #         # Find the index of "?" in the final URL
+    #         question_mark_index = final_url.find("?")
+    #         if question_mark_index != -1:
+    #             final_url = final_url[:question_mark_index]
+    #         # Add the "?linkCode=ml1&tag=bigdeal09a-20" to the final URL
+    #         final_url = final_url + "?linkCode=ml1&tag=usadeals27-20"
+    #         deal +=  final_url + "\n"
+    #         ad_data = deal
+    #         new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+    #         ad_data = new_text + ad_data
+    #         # send_to_group(ad_data)
+    #         deal = ad_data
+    #         deal += "#ad \n"
+            # result = modify_links_in_deal(deal)
+            # if result is not None and result is not False:
+            #     deal, modified_link = result
+            #     try:
+            #         if '%' in deal:
+            #             print('done')
+            #         #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+            #     except Exception as e:
+            #         print(f"Error sending deal: {e}")
         else:
             print("Deal returned FALSE, probably exists")
 
     # Send the message to the destination channel without downloading media
     if message_media:
         await client.send_message(destination_entity, f"{deal}", file=message_media)
+        await client.send_message(destination_entity2, f"{deal}", file=message_media)
     else:
         await client.send_message(destination_entity, f"{deal}")
 
