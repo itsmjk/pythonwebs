@@ -83,10 +83,10 @@ def send_to_group(ad_data):
             # If the message is not already present, send it
             client.send_message(telegram_group_id, ad_data)
             print("Message sent to the group.")
-            client.send_message(mychannel, for_channel)
-            print("Message sent to the Channel.")
-            client.send_message(ourtelgroup_id, for_our_group)
-            print("Message sent to our group.")
+            # client.send_message(mychannel, for_channel)
+            # print("Message sent to the Channel.")
+            # client.send_message(ourtelgroup_id, for_our_group)
+            # print("Message sent to our group.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
     except Exception as e:
