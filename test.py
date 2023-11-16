@@ -1,18 +1,87 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from telethon import TelegramClient, sync
+from telethon.tl.types import MessageEntityUrl
+from datetime import datetime, timedelta, timezone
 import requests
 import json
 import time
+import re
 
-# Function to fetch deals based on a merchant name
-def fetch_deals(merchant_name=""):
+api_id = 24277666
+api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
+session_name = 'sessoinx2'
+telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
+# ourtelgroup_id = -1001500844459
+mychannel = 'xchannnal'
+client = TelegramClient(session_name, api_id, api_hash)
+client.start()
+
+def send_to_group(ad_data):
+    try:
+        # Get the messages from the group sent within the last 60 minutes
+        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=200)
+        # last_group_messages = []
+        # group_messages = client.get_messages(telegram_group_id, limit=80)
+        # for message in group_messages:
+        #     if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
+        #         break
+        #     if message.text is not None:
+        #         last_group_messages.append(message)
+
+        # Get messages from the channel within the last 60 minutes
+        entity = client.get_entity('xchannnal')
+        last_channel_messages = []
+        messages = client.get_messages(entity, limit=90)
+        for message in messages:
+            if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
+                break
+            last_channel_messages.append(message)
+
+        # Extract the link from the ad_data
+        link_start = ad_data.find("https://")
+        link_end = ad_data.find("\n", link_start)
+        if link_end == -1:
+            link = ad_data[link_start:]
+        else:
+            link = ad_data[link_start:link_end]
+
+        # Extract the part of the link that starts with '/' and ends with '?'
+        link_parts = link.split('/')
+        filtered_parts = [part for part in link_parts if '?' in part]
+        if filtered_parts:
+            link = filtered_parts[0]
+        else:
+            link = ""  # If no valid link found, set it to empty
+        
+        # Check if the link exists in the last messages within the last 60 minutes
+        message_exists = any(link in message.text for message in last_channel_messages)
+        # Replace "hugebargains-21" with "ukdeals27-21"
+        for_channel = ad_data
+        for_our_group = ad_data.replace("hugebargains-21", "ukdeals27-21")
+        
+        if not message_exists:
+            # If the message is not already present, send it
+            # client.send_message(telegram_group_id, ad_data)
+            # print("Message sent to the group.")
+            client.send_message(mychannel, for_channel)
+            print("Message sent to the Channel.")
+            # client.send_message(ourtelgroup_id, for_our_group)
+            # print("Message sent to our group.")
+        else:
+            print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
+    except Exception as e:
+        print("Error occurred while sending message to group:", e)
+
+# Function to fetch deals based on a merchant name and posted time
+def fetch_deals(merchant_name="", max_hours=4):
     # Start a headless Chrome browser
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
 
     # The URL of the web page
-    url = "https://www.hotukdeals.com/deals-new"
+    url = "https://www.hotukdeals.com/search/deals?merchant-id=1650"
     driver.get(url)
 
     # Wait for the page to load (you might need to adjust the duration)
@@ -31,9 +100,13 @@ def fetch_deals(merchant_name=""):
     # Extract and print the URL with the 7-digit code, title, and price for each product
     for article in product_articles:
         temp_element = article.find("span", class_="cept-vote-temp")
-        if temp_element:
+        time_element = article.find("span", class_="metaRibbon lbox--v-1 boxAlign-ai--all-c overflow--wrap-off space--l-3 text--color-greyShade")
+        
+        if temp_element and time_element:
             temp_text = temp_element.text.strip()
-            if temp_text.endswith("°") and int(temp_text[:-1]) > 25:
+            posted_time_text = time_element.find("span").text.strip()
+
+            if temp_text.endswith("°") and int(temp_text[:-1]) > 50:
                 data_t = article.get("data-t-d")
                 if data_t:
                     try:
@@ -45,32 +118,54 @@ def fetch_deals(merchant_name=""):
                         merchant = article.find("span", class_="cept-merchant-name text--b text--color-brandPrimary link")
 
                         if not merchant_name or (merchant and merchant.text.strip().lower() == merchant_name.lower()):
-                            deal_url = f"https://www.hotukdeals.com/visit/homeyou/{code}"
+                            time_match = re.search(r"(\d+\s*h, )?(\d+) m ago", posted_time_text)
+                            if time_match:
+                                posted_hours_ago = int(time_match.group(1).strip(' h, ')) if time_match.group(1) else 0
+                                posted_minutes_ago = int(time_match.group(2))
+                                total_posted_minutes_ago = posted_hours_ago * 60 + posted_minutes_ago
 
-                            # Send an additional GET request to the URL to follow redirection
-                            response = requests.get(deal_url, timeout=10)  # Add a timeout of 10 seconds
-                            print(response)
-                            
-                            if response.status_code == 503:
-                                # Use the URL after redirection
-                                final_url = response.url
-                                print(f"7-digit code: {code}")
-                                print(f"Title: {title}")
-                                print(f"Price: {price}")
-                                print(f"URL: {final_url}")
-                                print(f"Temperature: {temp_text}")
-                                print()
-                            elif response.status_code == 200:
-                                # Use the URL after redirection
-                                final_url = response.url
-                                print(f"7-digit code: {code}")
-                                print(f"Title: {title}")
-                                print(f"Price: {price}")
-                                print(f"URL: {final_url}")
-                                print(f"Temperature: {temp_text}")
-                                print()
-                            else:
-                                print(f"Failed to fetch the deal URL: {deal_url}")
+                                if total_posted_minutes_ago <= (max_hours * 60):
+                                    deal_url = f"https://www.hotukdeals.com/visit/homeyou/{code}"
+
+                                    # Send an additional GET request to the URL to follow redirection
+                                    response = requests.get(deal_url, timeout=10)  # Add a timeout of 10 seconds
+                                    print(response)
+                                    ad_data = ""
+                                    if response.status_code == 503:
+                                        # Use the URL after redirection
+                                        final_url = response.url
+                                        question_mark_index = final_url.find("?")
+
+                                        if question_mark_index != -1:  # If "?" is found in the URL
+                                            # Replace the text after "?" with "ref=abc"
+                                            modified_url = final_url[:question_mark_index + 1] + "ref=abc"
+                                            final_url = modified_url
+                                        # print(f"7-digit code: {code}")
+                                        # print(f"Title: {title}")
+                                        # print(f"Price: {price}")
+                                        # print(f"URL: {final_url}")
+                                        print(f"Temperature: {temp_text}")
+                                        print(f"Posted: {posted_time_text}")
+                                        
+                                        ad_data += f"About {price} 🔥\n"
+                                        ad_data += f"About {final_url}\n"
+                                        ad_data += "#ad\n"
+                                        print(ad_data)
+                                        send_to_group(ad_data)
+                                        
+                                        print()
+                                    elif response.status_code == 200:
+                                        # Use the URL after redirection
+                                        final_url = response.url
+                                        print(f"7-digit code: {code}")
+                                        print(f"Title: {title}")
+                                        print(f"Price: {price}")
+                                        print(f"URL: {final_url}")
+                                        print(f"Temperature: {temp_text}")
+                                        print(f"Posted: {posted_time_text}")
+                                        print()
+                                    else:
+                                        print(f"Failed to fetch the deal URL: {deal_url}")
                     except Exception as e:
                         print(f"An error occurred: {str(e)}")
                         continue  # Continue to the next deal
@@ -78,4 +173,6 @@ def fetch_deals(merchant_name=""):
 # Input your desired merchant name or leave it empty to fetch all deals
 # Example: merchant_name = "Amazon" or merchant_name = ""
 merchant_name = ""
-fetch_deals(merchant_name)
+# Maximum hours for filtering
+max_hours = 4
+fetch_deals(merchant_name, max_hours)
