@@ -10,7 +10,7 @@ import re
 
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-session_name = 'sessoinx2'
+session_name = 'sessoinx2y'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
 # ourtelgroup_id = -1001500844459
 mychannel = 'xchannnal'
