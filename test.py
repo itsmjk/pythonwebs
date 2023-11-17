@@ -106,7 +106,7 @@ def fetch_deals(merchant_name="", max_hours=4):
             temp_text = temp_element.text.strip()
             posted_time_text = time_element.find("span").text.strip()
 
-            if temp_text.endswith("°") and int(temp_text[:-1]) > 50:
+            if temp_text.endswith("°") and int(temp_text[:-1]) > 10:
                 data_t = article.get("data-t-d")
                 if data_t:
                     try:
