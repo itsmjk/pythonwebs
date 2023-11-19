@@ -4,7 +4,7 @@ from telethon.sync import TelegramClient, events
 
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-session_name = 'sessoinx1z'
+session_name = 'sessoinx1y'
 
 # Define a list of source channel usernames
 source_channel_usernames = ['hugebargainsuk']  # Add your source channel usernames here
