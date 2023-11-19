@@ -128,13 +128,15 @@ async def handle_message(event):
 
     if channel_username == 'xchannnal':
         print('xchannnal')
-        # Check if the message text contains a number followed by '%'
-        match = re.search(r'(\d+)% off', message_text)
-        if match:
-            matched_text = match.group(0)  # Get the matched text
-            percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
-            if percentage >= 29:  # Check if the percentage is 30% or more
-                deal += f"About {matched_text} 🔥\n"
+        # Check if the message contains price information
+        price_matches = re.findall(r'(\d+\.\d{2})\$', message_text)
+        if len(price_matches) == 2:
+            price1 = float(price_matches[0])
+            price2 = float(price_matches[1])
+            price_difference = price2 - price1
+            percentage_reduction = int((price_difference / price2) * 100)
+            if percentage_reduction >= 9:  # Check if the percentage is 30% or more
+                deal += f"About {percentage_reduction}% off 🔥\n"
             else:
                 return  # Skip this message if the condition is not met
         else:
