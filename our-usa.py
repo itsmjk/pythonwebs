@@ -4,7 +4,7 @@ from telethon.sync import TelegramClient, events
 
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-session_name = 'sessoinx7b'
+session_name = 'sessoinx7c'
 
 # Define a list of source channel usernames
 source_channel_usernames = ['USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
@@ -117,7 +117,7 @@ async def handle_message(event):
             price2 = float(price_matches[1])
             price_difference = price2 - price1
             percentage_reduction = int((price_difference / price2) * 100)
-            if percentage_reduction >= 29:  # Check if the percentage is 30% or more
+            if percentage_reduction >= 9:  # Check if the percentage is 30% or more
                 deal += f"About {percentage_reduction}% off 🔥\n"
             else:
                 return  # Skip this message if the condition is not met
