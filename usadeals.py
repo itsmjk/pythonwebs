@@ -19,7 +19,7 @@ import sys
 # client.start(phone_number)
 
 # Replace with your Page Access Token and Page ID
-page_access_token = 'EAAJaYuHW2EYBO57DziD4T5t5kJhoACZAsg6s6UfKM24XBaeokee0iLdDy6l9np0nXrZAtg7gpXU6gGMdZBokRneNJpZAwkzoElvP1EBUZAbWBIphAU7xxmaHr27k350a7ZBLHZBduidxZBbvKbJjn71WrIZBe5ZBf1g24oOJqZBfr2cACWdXKw8PR6fzZCTBDWP2ICpv'
+page_access_token = 'EAAJaYuHW2EYBO3zgVhYR2ZB5ckc4D0YJZCk13XZCHFwj369a5Whvk1Svl7XbKZBUy2ZCONBlASyUk2OaEZB17K21eNr4EYl1NPeZBGQkSMk2pdmNtpiTLDCC43JKO9tykvPXt4PjZAZCkbehOtZB9yAZC2ZAyZCQkCRI7BoylZBeuPqJ3nRxUZBY1u5JLjkny7513an5kYv'
 page_id = '101450682659753'
 
 # Define the API endpoint URLs
