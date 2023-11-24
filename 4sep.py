@@ -1,6 +1,11 @@
 from telethon import TelegramClient, sync
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import re
 from telethon.tl.types import MessageEntityUrl
 import pandas as pd
@@ -61,12 +66,12 @@ def send_to_group(ad_data):
         link_start = ad_data.find("https://")
         link_end = ad_data.find("\n", link_start)
         if link_end == -1:
-            link = ad_data[link_start:]
+            linkx = ad_data[link_start:]
         else:
-            link = ad_data[link_start:link_end]
+            linkx = ad_data[link_start:link_end]
 
         # Extract the part of the link that starts with '/' and ends with '?'
-        link_parts = link.split('/')
+        link_parts = linkx.split('/')
         filtered_parts = [part for part in link_parts if '?' in part]
         if filtered_parts:
             link = filtered_parts[0]
@@ -80,13 +85,33 @@ def send_to_group(ad_data):
         for_our_group = ad_data.replace("hugebargains-21", "ukdeals27-21")
         
         if not message_exists:
-            # If the message is not already present, send it
-            client.send_message(telegram_group_id, ad_data)
-            print("Message sent to the group.")
-            # client.send_message(mychannel, for_channel)
-            # print("Message sent to the Channel.")
-            # client.send_message(ourtelgroup_id, for_our_group)
-            # print("Message sent to our group.")
+            headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+            }
+            response = requests.get(linkx, headers=headers)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.content, 'html.parser')
+                
+                # Find the image element
+                image_element = soup.find('img', {'id': 'landingImage'})  # Identifying the image by ID
+
+                if image_element:
+                    image_url = image_element.get('src')
+                    print("Product Image URL:", image_url)
+                    ad_data += f"\n {image_url}"
+                    client.send_file(telegram_group_id, image_url, caption=ad_data)
+                    print("Message sent to the group.")
+                else:
+                    print("Image not found on the page.")
+                # If the message is not already present, send it
+                # client.send_message(telegram_group_id, ad_data)
+                # client.send_file(telegram_group_id, image_url, caption=ad_data)
+                # print("Message sent to the group.")
+                # time.sleep(7)
+                # client.send_message(mychannel, for_channel)
+                # print("Message sent to the Channel.")
+                # client.send_message(ourtelgroup_id, for_our_group)
+                # print("Message sent to our group.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
     except Exception as e:
@@ -193,15 +218,43 @@ def scrape_channel_messages(channel_username):
                                 ad_data += "Add all\n"
 
                             ad_data += "#ad\n"
+                            send_to_group(ad_data)
+                            # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36")
+                            # driver = webdriver.Chrome(options=options)
+                            # wait = WebDriverWait(driver, 10)
+
+                            # url = "https://www.amazon.co.uk/dp/B0B9SN1QYC?linkCode=ml1&tag=xxxxx-21"
+                            # driver.get(final_url)
+                            # # try:
+                            # #     # Dismiss the cookies popup if it exists
+                            # #     cookies_popup = wait.until(EC.presence_of_element_located((By.ID, "sp-cc-accept")))
+                            # #     cookies_popup.click()
+                            # # except Exception as e:
+                            # #     print(f"Could not dismiss the cookies popup: {e}")
+
+                            # # Change the zoom level if needed
+                            # driver.execute_script("document.body.style.zoom='80%'")
+
+                            # # Fetch the product image URL
+                            # try:
+                            #     product_image = wait.until(EC.presence_of_element_located((By.ID, "landingImage")))
+                            #     image_url = product_image.get_attribute("src")
+                            #     # client.send_file(mychannel, image_url, caption=ad_data)
+                            #     print(f"Product Image URL: {image_url}")
+                            #     message_data.append((channel_username, message.id, ad_data))
+                            #     send_to_group(ad_data, image_url)
+                                
+                            # except Exception as e:
+                            #     print(f"Could not fetch the product image: {e}")
                             # new_data = "**STAY ACTIVE - Like this post when you see it ✅️**"
                             # ad_data = new_data + "\n" + ad_data
                             # print(ad_data)
 
                             # Append the message data with the channel name to the list
-                            message_data.append((channel_username, message.id, ad_data))
+                            # message_data.append((channel_username, message.id, ad_data))
 
                             # Send the ad data to the specified Telegram group
-                            send_to_group(ad_data)
+                            # send_to_group(ad_data)
                         else:
                             pass
 
@@ -257,4 +310,4 @@ schedule.every(10).seconds.do(scheduled_task)
 # Run the scheduled task
 while True:
     schedule.run_pending()
-    time.sleep(1)
+    time.sleep(2)
