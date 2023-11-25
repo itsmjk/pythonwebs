@@ -90,8 +90,8 @@ def send_to_group(ad_data):
             try:
                 product_image = wait.until(EC.presence_of_element_located((By.ID, "landingImage")))
                 image_url = product_image.get_attribute("src")
-                # client.send_file(mychannel, image_url, caption=ad_data)
                 print(f"Product Image URL: {image_url}")
+                ad_data += image_url
                 client.send_file(telegram_group_id, image_url, caption=ad_data)
                 print('sent via selenium')
             except Exception as e:
@@ -214,7 +214,7 @@ def fetch_deals(merchant_name="", max_hours=4):
                                             ad_data += f"Cheaper with S&S \n"
                                         
                                         ad_data += f"{final_url}\n"
-                                        ad_data += "#ad\n"
+                                        ad_data += "#ad\n\n"
                                         send_to_group(ad_data)
                                         # print(ad_data)
                                         
