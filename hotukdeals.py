@@ -22,7 +22,7 @@ mychannel = 'xchannnal'
 client = TelegramClient(session_name, api_id, api_hash)
 client.start()
 
-def send_to_group(ad_data, image_url):
+def send_to_group(ad_data):
     try:
         # Get the messages from the group sent within the last 60 minutes
         time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=200)
@@ -47,12 +47,12 @@ def send_to_group(ad_data, image_url):
         link_start = ad_data.find("https://")
         link_end = ad_data.find("\n", link_start)
         if link_end == -1:
-            link = ad_data[link_start:]
+            linkx = ad_data[link_start:]
         else:
-            link = ad_data[link_start:link_end]
+            linkx = ad_data[link_start:link_end]
 
         # Extract the part of the link that starts with '/' and ends with '?'
-        link_parts = link.split('/')
+        link_parts = linkx.split('/')
         filtered_parts = [part for part in link_parts if '?' in part]
         if filtered_parts:
             link = filtered_parts[0]
@@ -66,16 +66,39 @@ def send_to_group(ad_data, image_url):
         # for_our_group = ad_data.replace("hugebargains-21", "ukdeals27-21")
         
         if not message_exists:
-            # If the message is not already present, send it
-            # client.send_message(telegram_group_id, ad_data)
-            client.send_file(telegram_group_id, image_url, caption=ad_data)
-            print("Message sent to the group.")
-            # client.send_message(mychannel, for_channel)
-            # print("Message sent to the Channel.")
-            # client.send_message(ourtelgroup_id, for_our_group)
-            # print("Message sent to our group.")
+            options = webdriver.ChromeOptions()
+            options.add_argument("--headless")
+            options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36")
+            options.add_argument("--disable-extensions")  # Disable browser extensions
+            options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
+            options.add_argument("--disable-software-rasterizer")  # Disable software rasterizer
+            options.add_argument("--disable-dev-shm-usage")  # Disable /dev/shm usage
+
+            # Additional options to suppress console logs
+            options.add_argument("--log-level=3")  # Set log level to suppress messages
+            options.add_experimental_option("excludeSwitches", ["enable-logging"])
+
+            driver = webdriver.Chrome(options=options)
+            wait = WebDriverWait(driver, 10)
+
+            driver.get(linkx)
+
+            # Change the zoom level if needed
+            driver.execute_script("document.body.style.zoom='80%'")
+
+            # Fetch the product image URL
+            try:
+                product_image = wait.until(EC.presence_of_element_located((By.ID, "landingImage")))
+                image_url = product_image.get_attribute("src")
+                # client.send_file(mychannel, image_url, caption=ad_data)
+                print(f"Product Image URL: {image_url}")
+                client.send_file(telegram_group_id, image_url, caption=ad_data)
+                print('sent via selenium')
+            except Exception as e:
+                print(f"Could not fetch the product image: {e}")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
+
     except Exception as e:
         print("Error occurred while sending message to group:", e)
 
@@ -84,18 +107,18 @@ def fetch_deals(merchant_name="", max_hours=4):
     # Start a headless Chrome browser
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
 
-    # The URL of the web page
-    url = "https://www.hotukdeals.com/search/deals?merchant-id=1650"
-    driver.get(url)
+    # Use 'with' statement to ensure the WebDriver is properly closed
+    with webdriver.Chrome(options=options) as driver:
+        # The URL of the web page
+        url = "https://www.hotukdeals.com/search/deals?merchant-id=1650"
+        driver.get(url)
 
-    # Wait for the page to load (you might need to adjust the duration)
-    time.sleep(5)
+        # Wait for the page to load (you might need to adjust the duration)
+        time.sleep(5)
 
-    # Get the page source after dynamic content has loaded
-    page_source = driver.page_source
-    driver.quit()
+        # Get the page source after dynamic content has loaded
+        page_source = driver.page_source
 
     # Parse the HTML content of the page
     soup = BeautifulSoup(page_source, "html.parser")
@@ -144,7 +167,7 @@ def fetch_deals(merchant_name="", max_hours=4):
                                         # Use the URL after redirection
                                         final_url = response.url
                                         # Find the index of the first occurrence of 8 or more consecutive capital letters or digits
-                                        match = re.search(r'[A-Z0-9]{8,}', final_url)
+                                        match = re.search(r'[A-Z0-9]{10,}', final_url)
                                         if match:
                                             start_index = match.start()
                                         else:
@@ -167,6 +190,7 @@ def fetch_deals(merchant_name="", max_hours=4):
                                             position = len(final_url)
 
                                         final_url = final_url[:position]
+                                        print(final_url)
                                         final_url = final_url + "?linkCode=ml1&tag=hugebargains-21"
                                         # question_mark_index = final_url.find("?")
 
@@ -181,6 +205,7 @@ def fetch_deals(merchant_name="", max_hours=4):
                                         # print(f"Temperature: {temp_text}")
                                         # print(f"Posted: {posted_time_text}")
                                         ad_data += f"About {price} 🔥\n"
+                                        print(price)
                                         voucher = re.search(fr'{re.escape("voucher")}', title, flags=re.IGNORECASE)
                                         if voucher:
                                             ad_data += f"Apply Voucher 💛\n"
@@ -190,36 +215,9 @@ def fetch_deals(merchant_name="", max_hours=4):
                                         
                                         ad_data += f"{final_url}\n"
                                         ad_data += "#ad\n"
-                                        # print(ad_data)
-                                        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36")
-
-                                        driver = webdriver.Chrome(options=options)
-                                        wait = WebDriverWait(driver, 10)
-
-                                        url = "https://www.amazon.co.uk/dp/B0B9SN1QYC?linkCode=ml1&tag=xxxxx-21"
-                                        driver.get(final_url)
-                                        try:
-                                            # Dismiss the cookies popup if it exists
-                                            cookies_popup = wait.until(EC.presence_of_element_located((By.ID, "sp-cc-accept")))
-                                            cookies_popup.click()
-                                        except Exception as e:
-                                            print(f"Could not dismiss the cookies popup: {e}")
-
-                                        # Change the zoom level if needed
-                                        driver.execute_script("document.body.style.zoom='80%'")
-
-                                        # Fetch the product image URL
-                                        try:
-                                            product_image = wait.until(EC.presence_of_element_located((By.ID, "landingImage")))
-                                            image_url = product_image.get_attribute("src")
-                                            # client.send_file(mychannel, image_url, caption=ad_data)
-                                            print(f"Product Image URL: {image_url}")
-                                            send_to_group(ad_data, image_url)
-                                        except Exception as e:
-                                            print(f"Could not fetch the product image: {e}")
+                                        send_to_group(ad_data)
                                         # print(ad_data)
                                         
-                                        print('sent')
                                     elif response.status_code == 200:
                                         # Use the URL after redirection
                                         final_url = response.url
@@ -245,7 +243,7 @@ def run_code():
     fetch_deals(merchant_name, max_hours)
 
 # Schedule the job to run every 10 minutes
-schedule.every(30).minutes.do(run_code)
+schedule.every(1).minutes.do(run_code)
 
 while True:
     schedule.run_pending()
