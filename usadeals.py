@@ -20,7 +20,9 @@ import sys
 
 # Replace with your Page Access Token and Page ID
 page_access_token = 'EAAJaYuHW2EYBO3zgVhYR2ZB5ckc4D0YJZCk13XZCHFwj369a5Whvk1Svl7XbKZBUy2ZCONBlASyUk2OaEZB17K21eNr4EYl1NPeZBGQkSMk2pdmNtpiTLDCC43JKO9tykvPXt4PjZAZCkbehOtZB9yAZC2ZAyZCQkCRI7BoylZBeuPqJ3nRxUZBY1u5JLjkny7513an5kYv'
+our_page_access_token = 'EAAU1c5aXSKMBO0vNkT0HhaC9HzxwyMZCPAs7J5NoM8s2eD7ojZAx0h9ZCAlyJInekkUFMmgdigwx4s1GLTsxr0QBDLe5s8jiumycvOebEzLe6NQ2eHZBq5lSH3Hh9XjaoJ6JXC1jvCqCJKXaHZAoF2pILXcZAUnMuxYLjHrtiNC7LZBZBKuFGZBzgxi7BZAfzMsnRY'
 page_id = '101450682659753'
+our_page_id = '126329840572666'
 
 # Define the API endpoint URLs
 conversations_url = f'https://graph.facebook.com/v13.0/{page_id}/conversations'
@@ -85,6 +87,7 @@ def modify_links_in_deal(deal):
         print(expanded_link)
         # Modify the link as needed
         modified_link = expanded_link + "?linkCode=ml1&tag=bigdeal09a-20"
+        our_modified_link = expanded_link + "?linkCode=ml1&tag=kaysdealsusa-20"
         # Replace the original URL with the modified one in the deal text
         deal = deal.replace(url, modified_link)
         deal += "\n #ad \n"
@@ -94,7 +97,7 @@ def modify_links_in_deal(deal):
         dealcheck = is_link_already_posted(link)
         if dealcheck:
             # return deal
-            return deal, modified_link
+            return deal, modified_link, our_modified_link
         else:
             return False
 
@@ -232,7 +235,7 @@ def scrape_page_messages():
                     for deal in deals:
                         result = modify_links_in_deal(deal)
                         if result is not None and result is not False:
-                            deal, modified_link = result
+                            deal, modified_link, our_modified_link = result
                             try:
                                 if '%' in deal:
                                     # send_to_facebook_group(modified_deal)
@@ -260,10 +263,41 @@ def scrape_page_messages():
                                     }
                                     fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
                                     if fb_group_response.status_code == 200:
+                                        print('Message posted on FB group')
+                                        # print(f"Message posted on the Facebook group. Now wait 300 seconds")
+                                        # time.sleep(500)
+                                    else:
+                                        print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+
+                                    #OUR POSTINGS
+                                    our_deal = deal.replace('bigdeal09a-20', 'kaysdealsusa-20')
+                                    fb_api_url = f'https://graph.facebook.com/v13.0/{our_page_id}/feed'
+                                    fb_params = {
+                                        'access_token': our_page_access_token,
+                                        'message': our_deal,
+                                        'link': our_modified_link
+                                    }
+                                    fb_response = requests.post(fb_api_url, data=fb_params)
+                                    if fb_response.status_code == 200:
+                                        print("Message posted on our page.")
+                                        # time.sleep(700)
+                                    else:
+                                        print("Error posting message on our page:", fb_response.text)
+
+                                    #post to group
+                                    our_group_id = 712288753692244
+                                    fb_group_api_url = f'https://graph.facebook.com/v13.0/{our_group_id}/feed'
+                                    fb_group_params = {
+                                        'access_token': our_page_access_token,
+                                        'message': our_deal,
+                                        'link': our_modified_link
+                                    }
+                                    fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
+                                    if fb_group_response.status_code == 200:
                                         print(f"Message posted on the Facebook group. Now wait 300 seconds")
                                         time.sleep(500)
                                     else:
-                                        print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+                                        print(f"Error posting message on the Facebook group (ID: {our_group_id}):", fb_group_response.text)
                             except Exception as e:
                                 print(f"Error sending deal: {e}")
                         else:
