@@ -85,36 +85,33 @@ def send_to_group(ad_data):
         for_our_group = ad_data.replace("hugebargains-21", "ukdeals27-21")
         
         if not message_exists:
-            options = webdriver.ChromeOptions()
-            options.add_argument("--headless")
-            options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36")
-            options.add_argument("--disable-extensions")  # Disable browser extensions
-            options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
-            options.add_argument("--disable-software-rasterizer")  # Disable software rasterizer
-            options.add_argument("--disable-dev-shm-usage")  # Disable /dev/shm usage
+            headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+            }
+            response = requests.get(linkx, headers=headers)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.content, 'html.parser')
+                
+                # Find the image element
+                image_element = soup.find('img', {'id': 'landingImage'})  # Identifying the image by ID
 
-            # Additional options to suppress console logs
-            options.add_argument("--log-level=3")  # Set log level to suppress messages
-            options.add_experimental_option("excludeSwitches", ["enable-logging"])
-
-            driver = webdriver.Chrome(options=options)
-            wait = WebDriverWait(driver, 10)
-
-            driver.get(linkx)
-
-            # Change the zoom level if needed
-            driver.execute_script("document.body.style.zoom='80%'")
-
-            # Fetch the product image URL
-            try:
-                product_image = wait.until(EC.presence_of_element_located((By.ID, "landingImage")))
-                image_url = product_image.get_attribute("src")
-                print(f"Product Image URL: {image_url}")
-                ad_data += image_url
-                client.send_file(telegram_group_id, image_url, caption=ad_data)
-                print('sent via selenium')
-            except Exception as e:
-                print(f"Could not fetch the product image: {e}")
+                if image_element:
+                    image_url = image_element.get('src')
+                    print("Product Image URL:", image_url)
+                    ad_data += f"\n {image_url}"
+                    client.send_file(telegram_group_id, image_url, caption=ad_data)
+                    print("Message sent to the group.")
+                else:
+                    print("Image not found on the page.")
+                # If the message is not already present, send it
+                # client.send_message(telegram_group_id, ad_data)
+                # client.send_file(telegram_group_id, image_url, caption=ad_data)
+                # print("Message sent to the group.")
+                # time.sleep(7)
+                # client.send_message(mychannel, for_channel)
+                # print("Message sent to the Channel.")
+                # client.send_message(ourtelgroup_id, for_our_group)
+                # print("Message sent to our group.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
     except Exception as e:
@@ -220,7 +217,7 @@ def scrape_channel_messages(channel_username):
                             if link_count > 1:
                                 ad_data += "Add all\n"
 
-                            ad_data += "#ad\n\n"
+                            ad_data += "#ad\n"
                             send_to_group(ad_data)
                             # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36")
                             # driver = webdriver.Chrome(options=options)
