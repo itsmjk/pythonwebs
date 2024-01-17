@@ -271,18 +271,18 @@ def scrape_page_messages():
 
                                     #OUR POSTINGS
                                     our_deal = deal.replace('bigdeal09a-20', 'kaysdealsusa-20')
-                                    fb_api_url = f'https://graph.facebook.com/v13.0/{our_page_id}/feed'
-                                    fb_params = {
-                                        'access_token': our_page_access_token,
-                                        'message': our_deal,
-                                        'link': our_modified_link
-                                    }
-                                    fb_response = requests.post(fb_api_url, data=fb_params)
-                                    if fb_response.status_code == 200:
-                                        print("Message posted on our page.")
-                                        # time.sleep(700)
-                                    else:
-                                        print("Error posting message on our page:", fb_response.text)
+                                    # fb_api_url = f'https://graph.facebook.com/v13.0/{our_page_id}/feed'
+                                    # fb_params = {
+                                    #     'access_token': our_page_access_token,
+                                    #     'message': our_deal,
+                                    #     'link': our_modified_link
+                                    # }
+                                    # fb_response = requests.post(fb_api_url, data=fb_params)
+                                    # if fb_response.status_code == 200:
+                                    #     print("Message posted on our page.")
+                                    #     # time.sleep(700)
+                                    # else:
+                                    #     print("Error posting message on our page:", fb_response.text)
 
                                     #post to group
                                     our_group_id = 712288753692244
