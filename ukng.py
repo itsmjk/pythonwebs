@@ -190,7 +190,7 @@ def scrape_channel_messages(channel_username):
                                             if question_mark_index != -1:
                                                 final_url = final_url[:question_mark_index]
                                             # Add the "?tag=dealsbargains00-21" to the final URL
-                                            final_url = final_url + "?linkCode=ml1&tag=dealsbargains00-21"
+                                            final_url = final_url + "?linkCode=ml1&tag=ukbigdeals-21"
                                             ad_data +=  final_url + "\n"
 
                             if link_count > 1:
