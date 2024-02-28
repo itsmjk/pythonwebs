@@ -97,7 +97,7 @@ def modify_links_in_deal(deal):
         print(expanded_link)
         # Modify the link as needed
         modified_link = url + "?linkCode=ml1&tag=bigdeal09a-20"
-        modified_link_our = url + "?linkCode=ml1&tag=kaysdealsusa-20"
+        modified_link_our = url + "?linkCode=ml1&tag=usadeals05-20"
         # Replace the original URL with the modified one in the deal text
         deal = deal.replace(url, modified_link)
         deal_our = deal.replace(modified_link, modified_link_our)
