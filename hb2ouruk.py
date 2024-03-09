@@ -177,9 +177,10 @@ async def handle_message(event):
             print("Deal returned FALSE, probably exists")
 
     # Send the message to the destination channel without downloading media
-    if message_media:
-        await client.send_message(destination_entity, f"{deal}", file=message_media)
-        await client.send_message(destination_entity2, f"{deal}", file=message_media)
+    if message_text:
+        await client.send_message(destination_entity, f"{deal}")
+        await client.send_message(destination_entity2, f"{deal}")
+        # await client.send_message(destination_entity2, f"{deal}", file=message_media)
     else:
         await client.send_message(destination_entity, f"{deal}")
 
