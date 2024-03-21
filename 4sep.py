@@ -57,7 +57,8 @@ def send_to_group(ad_data):
         for message in messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
-            last_channel_messages.append(message)
+            if message.text is not None:
+                last_channel_messages.append(message)
 
         # Combine last messages from the group and channel
         all_last_messages = last_group_messages + last_channel_messages
