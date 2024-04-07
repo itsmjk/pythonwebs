@@ -180,6 +180,8 @@ def scrape_channel_messages(channel_username):
                             for entity in message.entities:
                                 if isinstance(entity, MessageEntityUrl):
                                     link = message_text[entity.offset:entity.offset + entity.length]  # Use message_text instead of message.message
+                                    if link.startswith("ttp"):
+                                        link = "http" + link[3:]  # Replace "ttp" with "http"
                                     # Check if it's a short link and resolve it
                                     if link.startswith("http"):
                                         final_url = resolve_short_link(link)
