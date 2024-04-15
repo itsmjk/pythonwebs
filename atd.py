@@ -39,7 +39,7 @@ def main():
                     'snow', 'sneeze', 'sniff', 'speedball', 'toot', 'white rock', 'sizzurp', 'drank', 'barre',
                     'purple jelly', 'wok', 'texas tea', 'memphis mud', 'dirty sprite', 'tsikuni', 'purple triss',
                     'speed', 'crank', 'ice', 'chalk', 'wash', 'trash', 'dunk', 'gak', 'pookie', 'christina', 'no doze',
-                    'white cross', 'cotton candy', 'rocket fuel', 'scooby snax', 'cocain', 'meth', 'heroin', 'eight ball']
+                    'white cross', 'cotton candy', 'rocket fuel', 'scooby snax', 'cocain', 'cocaine', 'meth', 'heroin', 'eight ball']
         while True:
             delete_messages_with_keywords(channel_entity, keywords)
     finally:
