@@ -1,5 +1,6 @@
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import ChatAdminRequiredError
+import re
 
 # Your Telegram API credentials
 api_id = 24277666
@@ -8,11 +9,12 @@ api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 # Initialize the Telegram client
 client = TelegramClient('sessoinx1s', api_id, api_hash)
 
+# Function to delete messages with keywords
 def delete_messages_with_keywords(channel_entity, keywords):
     try:
-        messages = client.get_messages(channel_entity, limit=10)  # Adjust limit as needed
+        messages = client.get_messages(channel_entity, limit=10)
         for message in messages:
-            if message.text is not None and any(keyword.lower() in message.text.lower() for keyword in keywords):
+            if message.text is not None and any(re.search(r'\b{}\b'.format(re.escape(keyword)), message.text, re.IGNORECASE) for keyword in keywords):
                 print("Message to delete:", message.text)
                 try:
                     client.delete_messages(channel_entity, [message.id])
@@ -23,6 +25,7 @@ def delete_messages_with_keywords(channel_entity, keywords):
                     print(f"Error deleting message: {e}")
     except Exception as e:
         print(f"Error: {e}")
+
 
 def main():
     try:
