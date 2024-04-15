@@ -93,7 +93,7 @@ with client_telethon:
     # Start checking for new rows every 5 seconds
     while True:
         print("Sleep time started.")
-        time.sleep(5)
+        time.sleep(70)
         print("Sleep time ended.")
         print("Checking for new rows...")
         previous_rows = check_for_new_rows_and_send(previous_rows)
