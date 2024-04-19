@@ -1,3 +1,4 @@
+import time
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import ChatAdminRequiredError
 import re
@@ -17,11 +18,6 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
             # Fetch the sender's username if available
             sender_username = message.sender.username if message.sender else None
             
-            # Check if the message sender's username is the except_member_username
-            if sender_username == except_member_username:
-                print("Message sent by the except member.")
-                continue  # Skip messages sent by the except member
-            
             # Check if the message contains any of the keywords
             if any(re.search(r'\b{}\b'.format(re.escape(keyword)), message.text, re.IGNORECASE) for keyword in keywords):
                 print("Message to delete:", message.text)
@@ -36,14 +32,19 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
                     
             # Check if the message contains any links
             if 'http' in message.text:
-                print("Message contains a link:", message.text)
-                try:
-                    client.delete_messages(channel_entity, [message.id])
-                    print("Message deleted successfully!")
-                except ChatAdminRequiredError:
-                    print("You don't have the necessary permissions to delete messages.")
-                except Exception as e:
-                    print(f"Error deleting message: {e}")
+                # Check if the message sender's username is the except_member_username
+                if sender_username == except_member_username:
+                    print("Message sent by the except member.")
+                    continue  # Skip messages sent by the except member
+                else:
+                    print("Message contains a link:", message.text)
+                    try:
+                        client.delete_messages(channel_entity, [message.id])
+                        print("Message deleted successfully!")
+                    except ChatAdminRequiredError:
+                        print("You don't have the necessary permissions to delete messages.")
+                    except Exception as e:
+                        print(f"Error deleting message: {e}")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -64,7 +65,10 @@ def main():
                     'fentanyls', 'fentanyl', 'addys']
         while True:
             delete_messages_with_keywords_and_links(channel_entity, keywords, except_member_username)
+            print('sleeping for few seconds')
+            time.sleep(5)  # Sleep for 5 seconds before the next iteration
     finally:
         client.disconnect()
+
 if __name__ == "__main__":
     main()
