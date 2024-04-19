@@ -49,8 +49,8 @@ def send_messages_to_telegram(messages):
         chunks = [message[i:i+4000] for i in range(0, len(message), 4000)]
         
         for chunk in chunks:
-            print(chunk)
-            # client.send_message(telegram_group_id, chunk)
+            # print(chunk)
+            client.send_message(telegram_group_id, chunk)
             time.sleep(1)  # Add a small delay between messages to avoid rate limits
         
     except Exception as e:
@@ -65,7 +65,7 @@ with client_telethon:
     # Start checking for changes every 70 seconds
     while True:
         print("Sleep time started.")
-        time.sleep(8)
+        time.sleep(100)
         print("Sleep time ended.")
         print("Checking for changes...")
         previous_data = check_for_changes_and_send(previous_data)
