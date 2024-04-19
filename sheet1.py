@@ -50,7 +50,7 @@ def send_messages_to_telegram(messages):
         
         for chunk in chunks:
             # print(chunk)
-            client.send_message(telegram_group_id, chunk)
+            client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
             time.sleep(1)  # Add a small delay between messages to avoid rate limits
         
     except Exception as e:
