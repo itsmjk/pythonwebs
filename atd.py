@@ -12,7 +12,7 @@ client = TelegramClient('sessoinx1s', api_id, api_hash)
 # Function to delete messages with keywords
 def delete_messages_with_keywords_and_links(channel_entity, keywords, except_member_username):
     try:
-        messages = client.get_messages(channel_entity, limit=3)
+        messages = client.get_messages(channel_entity, limit=2)
         for message in messages:
             print(message.sender.username)
             # Check if the message contains any of the keywords
