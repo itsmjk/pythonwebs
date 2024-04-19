@@ -30,6 +30,9 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
                 # Fetch participants' usernames
                 all_participants = client.get_participants(channel_entity, aggressive=True)
                 participant_usernames = [participant.username for participant in all_participants if participant.username]
+                print(message.sender)
+                print(message.sender.username)
+                print(all_participants)
                 # Check if the message sender's username is in the participant usernames
                 if message.sender and message.sender.username in participant_usernames:
                     print("Message contains link but is sent by a member.")
