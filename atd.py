@@ -13,7 +13,7 @@ client = TelegramClient('sessoinx1s', api_id, api_hash)
 # Function to delete messages with keywords
 def delete_messages_with_keywords_and_links(channel_entity, keywords, except_member_username):
     try:
-        messages = client.get_messages(channel_entity, limit=3)
+        messages = client.get_messages(channel_entity, limit=10)
         for message in messages:
             # Fetch the sender's username if available
             sender_username = message.sender.username if message.sender else None
@@ -52,9 +52,9 @@ def main():
     try:
         client.start()
         # Replace 'YOUR_CHANNEL_USERNAME' with the username of your channel
-        channel_username = 'testing_akjk'
+        channel_username = 'HoustonMarket'
         channel_entity = client.get_entity(channel_username)
-        except_member_username = 'harnoli7'  # Specify the username of the member whose messages should be excluded
+        except_member_username = 'passionfarm'  # Specify the username of the member whose messages should be excluded
         keywords = ['black rock', 'candy', 'chemical', 'cookies', 'dice', 'gravel', 'grit', 'hail', 'hard rock',
                     'jelly beans', 'purple caps', 'rocks', 'scrabble', 'sleet', 'snow coke', 'tornado', 'blow',
                     'bump', 'c', 'big c', 'coke', 'crack', 'dust', 'flake', 'line', 'nose candy', 'pearl', 'rail',
@@ -66,7 +66,7 @@ def main():
         while True:
             delete_messages_with_keywords_and_links(channel_entity, keywords, except_member_username)
             print('sleeping for few seconds')
-            time.sleep(5)  # Sleep for 5 seconds before the next iteration
+            time.sleep(7)  # Sleep for 5 seconds before the next iteration
     finally:
         client.disconnect()
 
