@@ -27,21 +27,26 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
                     print(f"Error deleting message: {e}")
             # Check if the message contains any links
             if 'http' in message.text:
-                # Check if the message is sent by the except_member_username
-                if message.sender.username == except_member_username:
-                    print("Message contains link but send by specified member.")
-                    continue  # Skip messages sent by the specified member
-                else:   
-                    print("Message contains a link:", message.text)
-                    try:
-                        client.delete_messages(channel_entity, [message.id])
-                        print("Message deleted successfully!")
-                    except ChatAdminRequiredError:
-                        print("You don't have the necessary permissions to delete messages.")
-                    except Exception as e:
-                        print(f"Error deleting message: {e}")
+                # Check if the message has a sender
+                if message.sender is not None:
+                    # Check if the message is sent by the except_member_username
+                    if message.sender.username == except_member_username:
+                        print("Message contains link but is sent by the specified member.")
+                        continue  # Skip messages sent by the specified member
+                    else:   
+                        print("Message contains a link:", message.text)
+                        try:
+                            client.delete_messages(channel_entity, [message.id])
+                            print("Message deleted successfully!")
+                        except ChatAdminRequiredError:
+                            print("You don't have the necessary permissions to delete messages.")
+                        except Exception as e:
+                            print(f"Error deleting message: {e}")
+                else:
+                    print("Message contains a link, but the sender is None.")
     except Exception as e:
         print(f"Error: {e}")
+
 
 def main():
     try:
@@ -49,7 +54,7 @@ def main():
         # Replace 'YOUR_CHANNEL_USERNAME' with the username of your channel
         channel_username = 'testing_akjk'
         channel_entity = client.get_entity(channel_username)
-        except_member_username = 'Hashspider'  # Specify the username of the member whose messages should be excluded
+        except_member_username = 'zazziviz'  # Specify the username of the member whose messages should be excluded
         keywords = ['black rock', 'candy', 'chemical', 'cookies', 'dice', 'gravel', 'grit', 'hail', 'hard rock',
                     'jelly beans', 'purple caps', 'rocks', 'scrabble', 'sleet', 'snow coke', 'tornado', 'blow',
                     'bump', 'c', 'big c', 'coke', 'crack', 'dust', 'flake', 'line', 'nose candy', 'pearl', 'rail',
