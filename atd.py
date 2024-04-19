@@ -53,7 +53,7 @@ def main():
         # Replace 'YOUR_CHANNEL_USERNAME' with the username of your channel
         channel_username = 'testing_akjk'
         channel_entity = client.get_entity(channel_username)
-        except_member_username = 'zazziviz'  # Specify the username of the member whose messages should be excluded
+        except_member_username = 'harnoli7'  # Specify the username of the member whose messages should be excluded
         keywords = ['black rock', 'candy', 'chemical', 'cookies', 'dice', 'gravel', 'grit', 'hail', 'hard rock',
                     'jelly beans', 'purple caps', 'rocks', 'scrabble', 'sleet', 'snow coke', 'tornado', 'blow',
                     'bump', 'c', 'big c', 'coke', 'crack', 'dust', 'flake', 'line', 'nose candy', 'pearl', 'rail',
