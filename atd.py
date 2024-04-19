@@ -28,23 +28,22 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
             # Check if the message contains any links
             if 'http' in message.text:
                 # Check if the message has a sender
-                print(message.sender)
-                # if message.sender is not None:
-                #     # Check if the message is sent by the except_member_username
-                #     if message.sender.username == except_member_username:
-                #         print("Message contains link but is sent by the specified member.")
-                #         continue  # Skip messages sent by the specified member
-                #     else:   
-                #         print("Message contains a link:", message.text)
-                #         try:
-                #             client.delete_messages(channel_entity, [message.id])
-                #             print("Message deleted successfully!")
-                #         except ChatAdminRequiredError:
-                #             print("You don't have the necessary permissions to delete messages.")
-                #         except Exception as e:
-                #             print(f"Error deleting message: {e}")
-                # else:
-                #     print("Message contains a link, but the sender is None.")
+                if message.sender is not None and message.sender.username is not None:
+                    # Check if the message is sent by the except_member_username
+                    if message.sender.username == except_member_username:
+                        print("Message contains link but is sent by the specified member.")
+                        continue  # Skip messages sent by the specified member
+                    else:   
+                        print("Message contains a link:", message.text)
+                        try:
+                            client.delete_messages(channel_entity, [message.id])
+                            print("Message deleted successfully!")
+                        except ChatAdminRequiredError:
+                            print("You don't have the necessary permissions to delete messages.")
+                        except Exception as e:
+                            print(f"Error deleting message: {e}")
+                else:
+                    print("Message contains a link, but the sender is None or has no username. Skipping...")
     except Exception as e:
         print(f"Error: {e}")
 
