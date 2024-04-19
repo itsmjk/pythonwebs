@@ -27,10 +27,11 @@ def check_for_changes_and_send(previous_data):
 
     messages = []
     for row in current_data:
-        d_value = row[3]
-        if any(c.isdigit() for c in d_value) and '+' in d_value or (d_value.isdigit() and int(d_value) > 0):
-            formatted_row = f"{row[4]} {row[0]} ({row[2]})"  # Adjust the index based on the desired columns
-            messages.append(formatted_row)
+        if row[0] and row[2] and row[4]:  # Check if columns A, C, and E are not empty
+            d_value = row[3]
+            if any(c.isdigit() for c in d_value) and '+' in d_value or (d_value.isdigit() and int(d_value) > 0):
+                formatted_row = f"{row[4]} {row[0]} ({row[2]})"  # Adjust the index based on the desired columns
+                messages.append(formatted_row)
 
     if messages and messages != previous_data:  # Check if there are changes and the data is different from previous
         print("Changes detected. Sending message to Telegram...")
@@ -64,7 +65,7 @@ with client_telethon:
     # Start checking for changes every 70 seconds
     while True:
         print("Sleep time started.")
-        time.sleep(70)
+        time.sleep(10)
         print("Sleep time ended.")
         print("Checking for changes...")
         previous_data = check_for_changes_and_send(previous_data)
