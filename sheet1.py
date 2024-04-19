@@ -21,6 +21,9 @@ client_telethon = TelegramClient(session_name, api_id, api_hash)
 spreadsheet = client.open("[CURRENT] April 24 Inventory")
 worksheet = spreadsheet.worksheet("Current inventory list")
 
+# Flag to indicate initial run
+initial_run = True
+
 # Function to check for changes in specified columns and send them to Telegram
 def check_for_changes_and_send(previous_data):
     current_data = worksheet.get_all_values()
@@ -33,7 +36,7 @@ def check_for_changes_and_send(previous_data):
                 formatted_row = f"{row[4]} {row[0]} ({row[2]})"  # Adjust the index based on the desired columns
                 messages.append(formatted_row)
 
-    if messages and messages != previous_data:  # Check if there are changes and the data is different from previous
+    if messages and (not initial_run) and messages != previous_data:  # Check if there are changes and it's not the initial run
         print("Changes detected. Sending message to Telegram...")
         send_messages_to_telegram(messages)
         print("Messages sent to Telegram")
@@ -49,8 +52,8 @@ def send_messages_to_telegram(messages):
         chunks = [message[i:i+4000] for i in range(0, len(message), 4000)]
         
         for chunk in chunks:
-            # print(chunk)
-            client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
+            print(chunk)
+            # client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
             time.sleep(1)  # Add a small delay between messages to avoid rate limits
         
     except Exception as e:
@@ -65,7 +68,8 @@ with client_telethon:
     # Start checking for changes every 70 seconds
     while True:
         print("Sleep time started.")
-        time.sleep(10)
+        time.sleep(7)
         print("Sleep time ended.")
         print("Checking for changes...")
         previous_data = check_for_changes_and_send(previous_data)
+        initial_run = False  # Update the initial_run flag after the first iteration
