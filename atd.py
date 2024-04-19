@@ -27,14 +27,10 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
                     print(f"Error deleting message: {e}")
             # Check if the message contains any links
             if 'http' in message.text:
-                # Fetch participants' usernames
-                all_participants = client.get_participants(channel_entity, aggressive=True)
-                participant_usernames = [participant.username for participant in all_participants if participant.username]
-                print(message.sender.username)
-                # Check if the message sender's username is in the participant usernames
+                # Check if the message sender's username is the except_member_username
                 if message.sender.username == except_member_username:
-                    print("Message contains link but is sent by a member.")
-                    continue  # Skip messages sent by participants
+                    print("Message contains link but is sent by the except member.")
+                    continue  # Skip messages sent by the except member
                 else:
                     print("Message contains a link:", message.text)
                     try:
