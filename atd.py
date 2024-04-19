@@ -66,7 +66,7 @@ def main():
         while True:
             delete_messages_with_keywords_and_links(channel_entity, keywords, except_member_username)
             print('sleeping for few seconds')
-            time.sleep(7)  # Sleep for 5 seconds before the next iteration
+            time.sleep(9)  # Sleep for 5 seconds before the next iteration
     finally:
         client.disconnect()
 
