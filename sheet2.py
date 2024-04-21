@@ -25,6 +25,7 @@ worksheet = spreadsheet.worksheet("Current inventory list")
 initial_run = True
 
 # Function to check for changes in specified columns and send them to Telegram
+# Function to check for changes in specified columns and send them to Telegram
 def check_for_changes_and_send(previous_data):
     current_data = worksheet.get_all_values()
 
@@ -43,12 +44,30 @@ def check_for_changes_and_send(previous_data):
 
     if new_row_added or inventory_zeroed:
         formatted_messages = []
+        indoor_items = []
+        disposable_items = []
+
         for row in current_data:
             if row[0] and row[2] and row[3] and row[4]:  # Check if columns A, C, D, and E are not empty
-                d_value = row[3]
-                if any(c.isdigit() for c in d_value) and '+' in d_value or (d_value.replace('.', '', 1).isdigit() and float(d_value) > 0):
-                    formatted_row = f"{row[4]} {row[0]} ({row[2]})"  # Adjust the index based on the desired columns
-                    formatted_messages.append(formatted_row)
+                try:
+                    price = float(row[4].strip('$'))  # Convert price to float, remove dollar sign
+                    if any(c.isdigit() for c in row[3]) and '+' in row[3] or (row[3].replace('.', '', 1).isdigit() and float(row[3]) > 0):
+                        formatted_row = f"{row[4]} {row[0]} ({row[2]})"  # Adjust the index based on the desired columns
+                        if row[2].lower().strip() == 'indoor':
+                            indoor_items.append((price, formatted_row))
+                        elif row[2].lower().strip() == 'disposables':
+                            disposable_items.append((price, formatted_row))
+                except ValueError:
+                    # print(f"Skipping row: {row} - Invalid price format")
+                    continue
+
+        # Sort indoor and disposable items by price
+        indoor_items.sort()
+        disposable_items.sort()
+
+        # Concatenate indoor and disposable items
+        formatted_messages.extend([item[1] for item in indoor_items])
+        formatted_messages.extend([item[1] for item in disposable_items])
 
         messages = formatted_messages
 
@@ -68,8 +87,8 @@ def send_messages_to_telegram(messages):
         chunks = [message[i:i+4000] for i in range(0, len(message), 4000)]
         
         for chunk in chunks:
-            # print(chunk)
-            client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
+            print(chunk)
+            # client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
             time.sleep(1)  # Add a small delay between messages to avoid rate limits
         
     except Exception as e:
