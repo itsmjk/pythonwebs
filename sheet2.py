@@ -18,7 +18,7 @@ telegram_group_id = -1002010661365
 client_telethon = TelegramClient(session_name, api_id, api_hash)
 
 # Open the Google Spreadsheet by title and worksheet by title
-spreadsheet = client.open("[ARCHIVE] FEBRUARY 24 Inventory")
+spreadsheet = client.open("[CURRENT] April 24 Inventory")
 worksheet = spreadsheet.worksheet("Current inventory list")
 
 # Flag to indicate initial run
