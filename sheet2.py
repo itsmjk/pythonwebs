@@ -107,6 +107,7 @@ def send_messages_to_telegram(messages):
             message += f"{items[0][4]} {items[0][0]} ({items[0][2]})\n"
             for item in sorted_items:
                 message += f"{item[4]} {item[0]} ({item[2]})\n"
+            message += '\n'
         
         # Check if the message exceeds the 4000 character limit
         if len(message) > 4000:
