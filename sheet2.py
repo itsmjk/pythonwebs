@@ -99,23 +99,30 @@ def check_for_changes_and_send(previous_data):
 
 def send_messages_to_telegram(messages):
     try:
+        message = ""  # Initialize an empty message string
         for category, items in messages.items():
-            message = f"{category.upper()}\n"
+            message += f"{category.upper()}\n"
             valid_items = [item for item in items[1:] if item[4].strip('$').replace('.', '', 1).isdigit()]
             sorted_items = sorted(valid_items, key=lambda x: float(x[4].strip('$')))
             message += f"{items[0][4]} {items[0][0]} ({items[0][2]})\n"
             for item in sorted_items:
                 message += f"{item[4]} {item[0]} ({item[2]})\n"
-            
-            # Split the message into chunks of maximum 4000 characters
+        
+        # Check if the message exceeds the 4000 character limit
+        if len(message) > 4000:
             chunks = [message[i:i+4000] for i in range(0, len(message), 4000)]
-            
             for chunk in chunks:
                 client_telethon.send_message('harnoli7', chunk)
                 # client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
                 time.sleep(1)  # Add a small delay between messages to avoid rate limits
+        else:
+            # If the message is within the limit, send it as a single message
+            client_telethon.send_message('harnoli7', message)
+            # client_telethon.send_message(telegram_group_id, message)  # Corrected line
+            time.sleep(1)  # Add a small delay between messages to avoid rate limits
     except Exception as e:
         print("An error occurred while sending messages to Telegram:", e)
+
 
 
 
