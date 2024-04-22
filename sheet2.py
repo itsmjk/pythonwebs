@@ -113,13 +113,13 @@ def send_messages_to_telegram(messages):
         if len(message) > 4000:
             chunks = [message[i:i+4000] for i in range(0, len(message), 4000)]
             for chunk in chunks:
-                client_telethon.send_message('harnoli7', chunk)
-                # client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
+                # client_telethon.send_message('harnoli7', chunk)
+                client_telethon.send_message(telegram_group_id, chunk)  # Corrected line
                 time.sleep(1)  # Add a small delay between messages to avoid rate limits
         else:
             # If the message is within the limit, send it as a single message
-            client_telethon.send_message('harnoli7', message)
-            # client_telethon.send_message(telegram_group_id, message)  # Corrected line
+            # client_telethon.send_message('harnoli7', message)
+            client_telethon.send_message(telegram_group_id, message)  # Corrected line
             time.sleep(1)  # Add a small delay between messages to avoid rate limits
     except Exception as e:
         print("An error occurred while sending messages to Telegram:", e)
@@ -136,7 +136,7 @@ with client_telethon:
     # Start checking for changes every 70 seconds
     while True:
         print("Sleep time started.")
-        time.sleep(9)
+        time.sleep(120)
         print("Sleep time ended.")
         print("Checking for changes...")
         previous_data = check_for_changes_and_send(previous_data)
