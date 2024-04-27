@@ -136,7 +136,7 @@ with client_telethon:
     # Start checking for changes every 70 seconds
     while True:
         print("Sleep time started.")
-        time.sleep(120)
+        time.sleep(200)
         print("Sleep time ended.")
         print("Checking for changes...")
         previous_data = check_for_changes_and_send(previous_data)
