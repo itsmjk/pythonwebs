@@ -8,7 +8,7 @@ session_name = 'sessoinx1ouk'
 
 # Replace with your Page Access Token and Page ID
 page_access_token = 'EAAU1c5aXSKMBO5ODw3fbDbZBV1vuLxWYcMgA2TX32EFH1gdSLopMbwjLxrZAQlp6wTgeiUKOBHvVPIAZAwOko3yMuKFNRXBe0EYdcIyX5QPzHmZBdBupXxy31NXWfjbMapg4Mo35ih0go1dhXA9zMYvbDXNCU6mLVNIJGkoBjrjxfLBZBxrWjBhQZAZBmbEAA8K'
-page_id = '131714140031420'
+page_id = 131714140031420
 group_id = 281598578025464
 
 # Define a list of source channel usernames
@@ -40,18 +40,31 @@ async def handle_message(event):
     for url in urls:
         # Expand the short link
         link = url
-        #post to group
-        fb_group_api_url = f'https://graph.facebook.com/v13.0/{group_id}/feed'
-        fb_group_params = {
+        #post to page
+        fb_api_url = f'https://graph.facebook.com/v19.0/{page_id}/feed'
+        fb_params = {
             'access_token': page_access_token,
             'message': new_message,
             'link': link
         }
-        fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
-        if fb_group_response.status_code == 200:
-            print('Message posted on FB group')
+        fb_response = requests.post(fb_api_url, data=fb_params)
+        if fb_response.status_code == 200:
+            print("Message posted on your page.")
+            # time.sleep(360)
         else:
-            print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+            print("Error posting message on your page:", fb_response.text)
+        # #post to group
+        # fb_group_api_url = f'https://graph.facebook.com/v13.0/{group_id}/feed'
+        # fb_group_params = {
+        #     'access_token': page_access_token,
+        #     'message': new_message,
+        #     'link': link
+        # }
+        # fb_group_response = requests.post(fb_group_api_url, data=fb_group_params)
+        # if fb_group_response.status_code == 200:
+        #     print('Message posted on FB group')
+        # else:
+        #     print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
 
 # Start the client
 with client:
