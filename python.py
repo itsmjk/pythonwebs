@@ -331,9 +331,9 @@ def scheduled_task():
     #     time.sleep(30600)
 
 # Schedule the task to run every 5 seconds
-schedule.every(15).seconds.do(scheduled_task)
+schedule.every(25).seconds.do(scheduled_task)
 
 # Run the scheduled task
 while True:
     schedule.run_pending()
-    time.sleep(2)
+    time.sleep(10)
