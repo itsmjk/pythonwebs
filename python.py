@@ -167,7 +167,16 @@ def scrape_channel_messages(channel_username):
                             if "subscribe" in message_text.lower() or "subs and save" in message_text.lower():
                                 ad_data += f"About {price} 🔥 via s&s\n"
                             elif "sub-n-sav" in message_text.lower():
-                                    ad_data += f"About {price} 🔥 cheaper with s&s\n"
+                                ad_data += f"About {price} 🔥 cheaper with s&s\n"
+                            elif re.search(r'\bget\s\d+', message_text, re.IGNORECASE):
+                                # Check if message contains "get" followed by a digit and print the matched part
+                                match = re.search(r'\bget\s\d+', message_text, re.IGNORECASE)
+                                if match:
+                                    val = match.group(0)   # Print the matched "get" followed by a digit
+                                if "s&s" in message_text.lower():
+                                    ad_data += f"{val} For About {price} 🔥 via s&s\n"
+                                else:
+                                    ad_data += f"{val} For About {price} 🔥\n"
                             elif "promotion" in message_text.lower():
                                 ad_data += f"About {price} 🔥 via on screen promotion\n"
                             elif "bogof" in message_text.lower():
@@ -204,9 +213,23 @@ def scrape_channel_messages(channel_username):
                                     link = message_text[entity.offset:entity.offset + entity.length]  # Use message_text instead of message.message
                                     # Check if it's a short link and resolve it
                                     if link.startswith("http"):
+                                        if "uk-treasurehunters" in link or "3TsrizF" in link:
+                                            continue
                                         final_url = resolve_short_link(link)
                                         if final_url:
                                             link_count += 1
+                                            # Find the "ref=." pattern directly after a "/"
+                                            ref_index = final_url.find("/ref=")
+                                            if ref_index != -1:
+                                                # Find the index of the "?" after the "ref=" pattern
+                                                question_mark_index = final_url.find("?", ref_index)
+                                                if question_mark_index != -1:
+                                                    # Remove the "ref=." part until the "?" character
+                                                    final_link = final_url[:ref_index] + final_url[question_mark_index:]
+                                                else:
+                                                    # If no "?" is found, remove everything after "ref=."
+                                                    final_link = final_url[:ref_index]
+                                                final_url = final_link
                                             # Find the index of "?" in the final URL
                                             question_mark_index = final_url.find("?")
                                             if question_mark_index != -1:
@@ -219,9 +242,9 @@ def scrape_channel_messages(channel_username):
                                 ad_data += "Add all\n"
 
                             ad_data += "#ad\n"
-                            price(channel_username)
-                            print(ad_data)
-                            # send_to_group(ad_data)
+                            print(channel_username)
+                            # print(ad_data)
+                            send_to_group(ad_data)
                             # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36")
                             # driver = webdriver.Chrome(options=options)
                             # wait = WebDriverWait(driver, 10)
@@ -308,7 +331,7 @@ def scheduled_task():
     #     time.sleep(30600)
 
 # Schedule the task to run every 5 seconds
-schedule.every(3).seconds.do(scheduled_task)
+schedule.every(15).seconds.do(scheduled_task)
 
 # Run the scheduled task
 while True:
