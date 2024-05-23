@@ -17,8 +17,8 @@ import sys
 # Replace these variables with your own values
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk']  # Add more channel usernames as needed
-session_name = 'mysession'
+channel_usernames = ['KTsDealsAndDiscounts', 'thriftydealsuk', 'rockingdealsuk', 'UKTreasureHunters', 'NicePriceDeals', 'BHUKDEAL']  # Add more channel usernames as needed
+session_name = 'sessoinxtest'
 mychannel = 'cryptoliontg'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
 ourtelgroup_id = -1001500844459
@@ -41,7 +41,7 @@ def resolve_short_link(short_link):
 def send_to_group(ad_data):
     try:
         # Get the messages from the group sent within the last 60 minutes
-        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=50)
+        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=200)
         last_group_messages = []
         group_messages = client.get_messages(telegram_group_id, limit=80)
         for message in group_messages:
@@ -57,7 +57,8 @@ def send_to_group(ad_data):
         for message in messages:
             if message.date.replace(tzinfo=timezone.utc) < time_60_minutes_ago:
                 break
-            last_channel_messages.append(message)
+            if message.text is not None:
+                last_channel_messages.append(message)
 
         # Combine last messages from the group and channel
         all_last_messages = last_group_messages + last_channel_messages
@@ -218,7 +219,9 @@ def scrape_channel_messages(channel_username):
                                 ad_data += "Add all\n"
 
                             ad_data += "#ad\n"
-                            send_to_group(ad_data)
+                            price(channel_username)
+                            print(ad_data)
+                            # send_to_group(ad_data)
                             # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36")
                             # driver = webdriver.Chrome(options=options)
                             # wait = WebDriverWait(driver, 10)
@@ -305,7 +308,7 @@ def scheduled_task():
     #     time.sleep(30600)
 
 # Schedule the task to run every 5 seconds
-schedule.every(10).seconds.do(scheduled_task)
+schedule.every(3).seconds.do(scheduled_task)
 
 # Run the scheduled task
 while True:
