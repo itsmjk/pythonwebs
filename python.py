@@ -177,7 +177,7 @@ def scrape_channel_messages(channel_username):
                                     ad_data += f"{val} For About {price} 🔥 via s&s\n"
                                 else:
                                     ad_data += f"{val} For About {price} 🔥\n"
-                            elif "promotion" in message_text.lower():
+                            elif "promotion" in message_text.lower() and channel_username != "UKTreasureHunters":
                                 ad_data += f"About {price} 🔥 via on screen promotion\n"
                             elif "bogof" in message_text.lower():
                                 ad_data += f"BOGOF Add 2 \n About {price} 🔥\n"
