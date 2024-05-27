@@ -215,6 +215,8 @@ def scrape_channel_messages(channel_username):
                                     if link.startswith("http"):
                                         if "uk-treasurehunters" in link or "3TsrizF" in link:
                                             continue
+                                        if "amzn" not in link and "amazon" not in link:
+                                            continue
                                         final_url = resolve_short_link(link)
                                         if final_url:
                                             link_count += 1
