@@ -22,6 +22,7 @@ print('Connected')
 @client.on(events.NewMessage(chats=source_channel_usernames))
 async def handle_message(event):
     message_text = event.text
+    print('okkk')
 
     # Define a regular expression pattern to match the link
     link_pattern = r'https://\S+'
