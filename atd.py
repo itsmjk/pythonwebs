@@ -52,7 +52,7 @@ def main():
     try:
         client.start()
         # Replace 'YOUR_CHANNEL_USERNAME' with the username of your channel
-        channel_username = 'HoustonMarket'
+        channel_username = 'Houstonmarket_texasmarket_usa'
         channel_entity = client.get_entity(channel_username)
         except_member_username = 'passionfarm'  # Specify the username of the member whose messages should be excluded
         keywords = ['black rock', 'candy', 'chemical', 'cookies', 'dice', 'gravel', 'grit', 'hail', 'hard rock',
