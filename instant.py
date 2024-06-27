@@ -8,7 +8,7 @@ api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
 
 # Initialize the Telegram client
-client = TelegramClient('sessionx1s', api_id, api_hash)
+client = TelegramClient('sessoinx1s', api_id, api_hash)
 
 # Function to delete messages with keywords
 def delete_messages_with_keywords_and_links(channel_entity, keywords, except_member_usernames):
