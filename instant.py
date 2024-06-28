@@ -67,7 +67,7 @@ def main():
         invite_link = 'https://t.me/+32GdcH9eAK0xODgx'
         channel_entity = client.get_entity(invite_link)
         
-        except_member_usernames = ['passionfarm', 'Passionfarms713', 'Zazziviz']  # List of usernames to be excluded
+        except_member_usernames = ['passionfarm', 'PassionFarms713', 'Zazziviz']  # List of usernames to be excluded
         keywords = ['black rock', 'candy', 'chemical', 'cookies', 'dice', 'gravel', 'grit', 'hail', 'hard rock',
                     'jelly beans', 'purple caps', 'rocks', 'scrabble', 'sleet', 'snow coke', 'tornado', 'blow',
                     'bump', 'c', 'big c', 'coke', 'crack', 'dust', 'flake', 'line', 'nose candy', 'pearl', 'rail',
