@@ -29,6 +29,7 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
                     print("Message sent by an excluded member:", sender_username)
                     continue  # Skip messages sent by excluded members
                 else:
+                    print(sender_username)
                     print("Message contains a link:", message.text)
                     try:
                         client.delete_messages(channel_entity, [message.id])
