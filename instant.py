@@ -42,9 +42,14 @@ def delete_messages_with_keywords_and_links(channel_entity, keywords, except_mem
             if any(re.search(r'\b{}\b'.format(re.escape(keyword)), message.text, re.IGNORECASE) for keyword in keywords):
                 print("Message to delete:", message.text)
                 try:
-                    client.delete_messages(channel_entity, [message.id])
-                    print("Message deleted successfully!")
-                    continue
+                    if sender_username in except_member_usernames:
+                        print("Message sent by an excluded member:", sender_username)
+                        continue  # Skip messages sent by excluded members
+                    else:
+                        client.delete_messages(channel_entity, [message.id])
+                        print("Message deleted successfully!")
+                        continue
+                        
                 except ChatAdminRequiredError:
                     print("You don't have the necessary permissions to delete messages.")
                 except Exception as e:
