@@ -18,6 +18,5 @@ message = 'Welcome to Houston, Texas Cannabis Marketplace! Click <a href="https:
 
 while True:
     response = send_message(bot_token, chat_id, message)
-    print(response)
-    print('now sleeping for 1 hour.')
+    print('link posted, now sleeping for 1 hour.')
     time.sleep(3600)  # Sleep for 1 hour (3600 seconds)
