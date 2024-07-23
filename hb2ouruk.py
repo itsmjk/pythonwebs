@@ -102,7 +102,7 @@ async def handle_message(event):
         updated_text = re.sub(r'hugebargains-21', 'ukdeals05a-21', message_text)
         if updated_text:
             deal = updated_text
-            deal += "\n Join our FB group for Best Deals: https://shorturl.at/uHY59 \n"
+            # deal += "\n Join our FB group for Best Deals: https://shorturl.at/uHY59 \n"
         else:
             return  # Skip this message if the condition is not met
         
