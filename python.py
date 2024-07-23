@@ -213,7 +213,7 @@ def scrape_channel_messages(channel_username):
                                     link = message_text[entity.offset:entity.offset + entity.length]  # Use message_text instead of message.message
                                     # Check if it's a short link and resolve it
                                     if link.startswith("http"):
-                                        if "uk-treasurehunters" in link or "46h5bCs" in link:
+                                        if "uk-treasurehunters" in link or "46h5bCs" in link or "3TsrizF" in link:
                                             continue
                                         if "amzn" not in link and "amazon" not in link:
                                             continue
