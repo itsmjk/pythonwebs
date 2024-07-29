@@ -94,6 +94,7 @@ while True:
                         price = product['stats']['buyBoxPrice'] / 100.0
                         link = f"https://www.amazon.co.uk/dp/{asin}?linkCode=ml1&tag=biggerbargains-21"
                         message = f"About £{price:.2f} 🔥\n{link}\n#ad"
+                        title = product.get('title', 'No title available')
                         message = f"{title} \n\n{message}"
                         print(message)
                         
