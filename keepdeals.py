@@ -21,7 +21,7 @@ def send_message_to_group(client, telegram_group_id, message):
 # Function to fetch last messages from Telegram group
 def get_last_group_messages(client, telegram_group_id, limit=80):
     try:
-        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=60)
+        time_60_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=90)
         last_group_messages = []
         group_messages = client.get_messages(telegram_group_id, limit=limit)
         
@@ -94,6 +94,7 @@ while True:
                         price = product['stats']['buyBoxPrice'] / 100.0
                         link = f"https://www.amazon.co.uk/dp/{asin}?linkCode=ml1&tag=biggerbargains-21"
                         message = f"About £{price:.2f} 🔥\n{link}\n#ad"
+                        message = f"{title} \n\n{message}"
                         print(message)
                         
                         send_message_to_group(client, telegram_group_id, message)
