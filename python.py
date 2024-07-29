@@ -2,6 +2,7 @@ from telethon import TelegramClient, sync
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 import requests
+import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -22,6 +23,7 @@ session_name = 'sessoinxtest'
 mychannel = 'cryptoliontg'
 telegram_group_id = -1001951330090  # Replace with the group ID where you want to send the messages
 ourtelgroup_id = -1001500844459
+api_key = '277a5p3cih7dokukn13qnr2pp40i3vnb1mhctd3b9eeogq1ol9bh6012qbeelk5j'
 
 # Connect to Telegram API
 client = TelegramClient(session_name, api_id, api_hash)
@@ -76,6 +78,7 @@ def send_to_group(ad_data):
         filtered_parts = [part for part in link_parts if '?' in part]
         if filtered_parts:
             link = filtered_parts[0]
+            asin = link.split('?')[0]  # Extract specific code
         else:
             link = ""  # If no valid link found, set it to empty
         
@@ -86,6 +89,19 @@ def send_to_group(ad_data):
         for_our_group = ad_data.replace("hugebargains-21", "ukdeals27-21")
         
         if not message_exists:
+            url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
+
+            # Make the API request
+            response = requests.get(url)
+            data = response.json()
+
+            # Check if the request was successful
+            if 'products' in data and len(data['products']) > 0:
+                product = data['products'][0]
+                title = product.get('title', 'No title available')
+                ad_data = f"{title} \n\n{ad_data}"
+            else:
+                title = "No title fetched"
             # headers = {
             # 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
             # }
