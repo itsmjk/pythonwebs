@@ -89,19 +89,20 @@ def send_to_group(ad_data):
         for_our_group = ad_data.replace("hugebargains-21", "ukdeals27-21")
         
         if not message_exists:
-            url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
+            # url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
 
-            # Make the API request
-            response = requests.get(url)
-            data = response.json()
+            # # Make the API request
+            # response = requests.get(url)
+            # data = response.json()
 
-            # Check if the request was successful
-            if 'products' in data and len(data['products']) > 0:
-                product = data['products'][0]
-                title = product.get('title', 'No title available')
-                ad_data = f"{title} \n\n{ad_data}"
-            else:
-                title = "No title fetched"
+            # # Check if the request was successful
+            # if 'products' in data and len(data['products']) > 0:
+            #     product = data['products'][0]
+            #     title = product.get('title', 'No title available')
+            #     ad_data = f"{title} \n\n{ad_data}"
+            # else:
+            #     title = "No title fetched"
+            
             # headers = {
             # 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
             # }
