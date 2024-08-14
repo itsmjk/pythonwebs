@@ -30,7 +30,7 @@ async def handle_message(event):
     # Use re.sub to replace the link with an empty string
     new_message = re.sub(link_pattern, '', message_text)
     
-    modified_link_message = message_text.replace('hugebargains-21', 'ukdeals004-21')
+    modified_link_message = message_text.replace('hugebargains-21', 'tk0f3-21')
     # Define a regular expression pattern to match URLs, including amzn.to
     url_pattern = r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|amzn\.to/[a-zA-Z0-9]+)'
     
