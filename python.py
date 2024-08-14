@@ -85,8 +85,8 @@ def send_to_group(ad_data):
         # Check if the link exists in the last messages within the last 60 minutes
         message_exists = any(link in message.text for message in all_last_messages)
         # Replace "hugebargains-21" with "ukdeals27-21"
-        for_channel = ad_data.replace("hugebargains-21", "ukdeals27-21")
-        for_our_group = ad_data.replace("hugebargains-21", "ukdeals27-21")
+        for_channel = ad_data.replace("hugebargains-21", "tk0f3-21")
+        for_our_group = ad_data.replace("hugebargains-21", "tk0f3-21")
         
         if not message_exists:
             # url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
@@ -126,10 +126,10 @@ def send_to_group(ad_data):
             # client.send_file(telegram_group_id, image_url, caption=ad_data)
             print("Message sent to the group.")
             # time.sleep(7)
-            # client.send_message(mychannel, for_channel)
-            # print("Message sent to the Channel.")
-            # client.send_message(ourtelgroup_id, for_our_group)
-            # print("Message sent to our group.")
+            client.send_message(mychannel, for_channel)
+            print("Message sent to the Channel.")
+            client.send_message(ourtelgroup_id, for_our_group)
+            print("Message sent to our group.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
     except Exception as e:
