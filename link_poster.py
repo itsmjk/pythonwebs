@@ -16,7 +16,7 @@ bot_token = "7253586168:AAFXyf3i6-QPHNE5nJZ_-Uh-_DmpliN6HXM"
 chat_id = -1001895503131
 
 # Messages
-message_1 = 'Welcome to Houston, Texas Cannabis Marketplace! Click <a href="https://t.me/+xb0oBA1HfSBiZjYx">here</a> to join Passion Farms Wholesale catalog.'
+message_1 = 'Welcome to Houston, Texas Cannabis Marketplace! Click <a href="https://t.me/+hKOUOzlePMJlYzY5">here</a> to join Passion Farms Wholesale catalog.'
 message_2 = 'Hello, Welcome to the Houston Market hosted by Passion Farms. Make sure you check the rules before sending any messages.'
 
 # Timer setup
