@@ -13,30 +13,22 @@ def send_message(bot_token, chat_id, message):
 
 # Replace with your bot token and chat ID
 bot_token = "7253586168:AAFXyf3i6-QPHNE5nJZ_-Uh-_DmpliN6HXM"
-chat_id = -1001895503131
+chat_id = -1002407772862
 
-# Messages
-message_1 = 'Welcome to Houston, Texas Cannabis Marketplace! Click <a href="https://t.me/+hKOUOzlePMJlYzY5">here</a> to join Passion Farms Wholesale catalog.'
-message_2 = 'Hello, Welcome to the Houston Market hosted by Passion Farms. Make sure you check the rules before sending any messages.'
+
+message = 'Hello, Welcome to the Houston Market hosted by Passion Farms. Make sure you check the rules before sending any messages, and click the <a href="https://t.me/+hKOUOzlePMJlYzY5">link</a> below to check out our wholesale catalogue. https://t.me/+hKOUOzlePMJlYzY5'
 
 # Timer setup
-one_hour = 3600  # 1 hour in seconds
 four_hours = 4 * 3600  # 4 hours in seconds
-time_since_last_message_2 = 0
+
+# Send the first message immediately when the code starts
+response = send_message(bot_token, chat_id, message)
+print('Message posted, now sleeping for 4 hours.')
 
 while True:
-    # Send message 1 every hour
-    response = send_message(bot_token, chat_id, message_1)
-    print('Message 1 posted, now sleeping for 1 hour.')
-
-    # Sleep for 1 hour
-    time.sleep(one_hour)
+    # Sleep for 4 hours
+    time.sleep(four_hours)
     
-    # Update time since last message 2 was sent
-    time_since_last_message_2 += one_hour
-
-    # Send message 2 every 4 hours
-    if time_since_last_message_2 >= four_hours:
-        response = send_message(bot_token, chat_id, message_2)
-        print('Message 2 posted, resetting 4-hour timer.')
-        time_since_last_message_2 = 0
+    # Send the message every 4 hours
+    response = send_message(bot_token, chat_id, message)
+    print('Message posted, now sleeping for 4 hours.')
