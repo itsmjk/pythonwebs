@@ -88,7 +88,11 @@ async def handle_message(event):
     channel_username = event.chat.username
 
     # Initialize the destination entity (channel or chat)
-    destination_entity = await client.get_entity(destination_channel_id)
+    try:
+        destination_entity = await client.get_entity(destination_channel_id)
+    except ValueError as e:
+        print(f"Error fetching destination entity: {e}")
+        return
 
     # Initialize the 'deal' variable
     deal = ''
