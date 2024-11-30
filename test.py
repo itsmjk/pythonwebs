@@ -1,153 +1,192 @@
-import asyncio
-import aiohttp
-import json
-import pandas as pd
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from datetime import datetime
-import time
+import re
+import requests
+from telethon.sync import TelegramClient, events
 
-# Define your Keepa API key and domains
-api_key = '277a5p3cih7dokukn13qnr2pp40i3vnb1mhctd3b9eeogq1ol9bh6012qbeelk5j'
-domains = [1, 6]  # 1 for US marketplace, 6 for CA marketplace
+api_id = 24277666
+api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
+session_name = 'sessoinx7c'
 
-# Google Sheets setup
-scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',
-         "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('myjsonfile1.json', scope)
-client = gspread.authorize(creds)
+# Define a list of source channel usernames
+source_channel_usernames = ['USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
 
-# Open the Google Sheets document
-sheet = client.open('Amazon')
+destination_channel_id = 123456789  # Replace with the destination channel's chat ID
 
-async def fetch_data(session, url):
-    async with session.get(url) as response:
-        return await response.json()
+# Create a TelegramClient instance
+client = TelegramClient(session_name, api_id, api_hash)
+print('Connected')
 
-def get_existing_asins(worksheet):
-    """Get a set of existing ASINs in the sheet."""
-    asins = set()
-    for row in worksheet.get_all_values():
-        asins.add(row[0])
-    return asins
+# Function to modify links in the deal message
+def modify_links_in_deal(deal):
+    # Define a regular expression pattern to match URLs, including amzn.to
+    url_pattern = r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|amzn\.to/[a-zA-Z0-9]+)'
+    
+    # Find all URLs in the deal text
+    urls = re.findall(url_pattern, deal)
+    
+    # Replace each URL with the modified version
+    for url in urls:
+        # Expand the short link
+        expanded_link = expand_short_link(url)
+        print(expanded_link)
+        # Modify the link as needed
+        modified_link = expanded_link + "?linkCode=ml1&tag=muntarily-20"
+        # Replace the original URL with the modified one in the deal text
+        deal = deal.replace(url, modified_link)
+        deal += "#ad \n"
+        # new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+        # deal = new_text + deal
+        dealcheck = expanded_link
+        if dealcheck:
+            # return deal
+            return deal, modified_link
+        else:
+            return False
 
-async def get_keepa_data(asins, domain):
-    """Fetch Keepa data asynchronously for a list of ASINs for a specific domain."""
-    url = f'https://api.keepa.com/product?key={api_key}&domain={domain}&asin=' + ','.join(asins) + '&stats=30&buybox=1'
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            response_data = await response.json()
-            return response_data['products']
-
-def format_price(price):
-    """Format price to display."""
-    if price in [-1, None]:
-        return 'Not Available'
-    return f"${price / 100:.2f}"
-
-def format_percentage(percentage):
-    """Format percentage to display."""
-    if percentage in ['N/A', None, 'Not Available']:
-        return 'Not Available'
+# Function to expand short links
+def expand_short_link(short_link):
     try:
-        return f"{percentage:.1f}%"
-    except ValueError:
-        return 'Not Available'
+        if short_link.startswith("amzn.to"):
+            short_link = "https://" + short_link  # Prepend http:// to amzn.to links
+        response = requests.head(short_link, allow_redirects=True)
+        expanded_link = response.url
 
-def extract_data(product):
-    """Extract relevant data from Keepa product data."""
-    stats = product.get('stats', {})
-    monthly_sales = product.get('monthlySold', 'Not Available')
-    current = stats.get('current', [])
-    avg30 = stats.get('avg30', [])
-    avg90 = stats.get('avg90', [])
+        # Find the index of the first occurrence of 8 or more consecutive capital letters or digits
+        match = re.search(r'[A-Z0-9]{8,}', expanded_link)
+        if match:
+            start_index = match.start()
+        else:
+            start_index = 0
 
-    buybox = current[18] if len(current) > 18 and current[18] != -1 else current[1] if len(current) > 1 else 'Not Available'
-    buybox30 = avg30[18] if len(avg30) > 18 and avg30[18] != -1 else avg30[1] if len(avg30) > 1 else 'Not Available'
-    buybox90 = avg90[18] if len(avg90) > 18 and avg90[18] != -1 else avg90[1] if len(avg90) > 1 else 'Not Available'
+        # Find the index of the first "?" character after the start_index
+        question_mark_index = expanded_link[start_index:].find("?")
+        
+        # Find the index of the first "/" character after the start_index
+        slash_index = expanded_link[start_index:].find("/")
 
-    salesrank = current[3] if len(current) > 3 else 'Not Available'
-    salesrank30 = avg30[3] if len(avg30) > 3 else 'Not Available'
-    salesrank90 = avg90[3] if len(avg90) > 3 else 'Not Available'
+        if question_mark_index != -1 and slash_index != -1:
+            # Determine the position of the first occurrence of "?" or "/"
+            position = min(question_mark_index, slash_index) + start_index
+        elif question_mark_index != -1:
+            position = question_mark_index + start_index
+        elif slash_index != -1:
+            position = slash_index + start_index
+        else:
+            position = len(expanded_link)
 
-    referral_fee = product.get('referralFeePercentage', 'Not Available')
-    referral_fee = format_percentage(referral_fee)
+        modified_link = expanded_link[:position]
 
-    fba_fees = product.get('fbaFees', None)
-    if fba_fees is None:
-        fbafee = 'Not Available'
+        return modified_link
+    except Exception as e:
+        print(f"Error expanding short link: {e}")
+        return short_link
+
+# Event handler for incoming messages in the source channels
+@client.on(events.NewMessage(chats=source_channel_usernames))
+async def handle_message(event):
+    message_text = event.text
+    message_media = event.media
+    channel_username = event.chat.username
+
+    # Initialize the destination entity (channel or chat)
+    destination_entity = await client.get_entity(destination_channel_id)
+
+    # Initialize the 'deal' variable
+    deal = ''
+
+    # Apply additional logic for the 'hcstealdealsUS' channel
+    if channel_username == 'hcstealdealsUS':
+        # Check if the message text contains a number followed by '%'
+        match = re.search(r'(\d+)% off', message_text)
+        if match:
+            matched_text = match.group(0)  # Get the matched text
+            percentage = int(matched_text.split('%')[0])  # Extract the percentage value as an integer
+            if percentage >= 29:  # Check if the percentage is 30% or more
+                deal += f"About {matched_text} 🔥\n"
+            else:
+                return  # Skip this message if the condition is not met
+        else:
+            return  # Skip this message if the condition is not met
+        if "coupon" in message_text.lower():
+            deal += "Apply Coupon\n"
+
+    if channel_username == 'USA_Deals_and_Coupons':
+        # Check if the message contains price information
+        price_matches = re.findall(r'(\d+\.\d{2})\$', message_text)
+        if len(price_matches) == 2:
+            price1 = float(price_matches[0])
+            price2 = float(price_matches[1])
+            price_difference = price2 - price1
+            percentage_reduction = int((price_difference / price2) * 100)
+            if percentage_reduction >= 9:  # Check if the percentage is 30% or more
+                deal += f"About {percentage_reduction}% off 🔥\n"
+            else:
+                return  # Skip this message if the condition is not met
+        else:
+            return  # Skip this message if the condition is not met
+        if "coupon" in message_text.lower():
+            deal += "Apply Coupon\n"
+
+    if channel_username == 'xchannnal':
+        print('xchannnal')
+        # Check if the message contains price information
+        price_matches = re.findall(r'(\d+\.\d{2})\$', message_text)
+        if len(price_matches) == 2:
+            price1 = float(price_matches[0])
+            price2 = float(price_matches[1])
+            price_difference = price2 - price1
+            percentage_reduction = int((price_difference / price2) * 100)
+            if percentage_reduction >= 9:  # Check if the percentage is 30% or more
+                deal += f"About {percentage_reduction}% off 🔥\n"
+            else:
+                return  # Skip this message if the condition is not met
+        else:
+            return  # Skip this message if the condition is not met
+        if "coupon" in message_text.lower():
+            deal += "Apply Coupon\n"
+
+    # Check if the message contains a link
+    # Check if the message contains a link but not the word "whatsapp"
+    match = re.search(r'https?://(?!.*(?:whatsapp|media))\S+', message_text)
+    if match:
+    # match = re.search(r'https?://\S+', message_text)
+    # if match:
+        found_link = match.group()
+        # final_url = expand_short_link(found_link)
+        final_url = found_link
+        if "/?" in final_url:
+            final_url = final_url.replace("/?", "?")
+        if final_url:
+            # Find the index of "?" in the final URL
+            question_mark_index = final_url.find("?")
+            if question_mark_index != -1:
+                final_url = final_url[:question_mark_index]
+            # Add the "?linkCode=ml1&tag=bigdeal09a-20" to the final URL
+            final_url = final_url + "?linkCode=ml1&tag=muntarily-20"
+            deal +=  final_url + "\n"
+            ad_data = deal
+            new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
+            ad_data = new_text + ad_data
+            # send_to_group(ad_data)
+            deal = ad_data
+            deal += "#ad \n"
+            # result = modify_links_in_deal(deal)
+            # if result is not None and result is not False:
+            #     deal, modified_link = result
+            #     try:
+            #         if '%' in deal:
+            #             print('done')
+            #         #         print(f"Error posting message on the Facebook group (ID: {group_id}):", fb_group_response.text)
+            #     except Exception as e:
+            #         print(f"Error sending deal: {e}")
+        else:
+            print("Deal returned FALSE, probably exists")
+
+    # Send the message to the destination channel without downloading media
+    if message_media:
+        await client.send_message(destination_entity, f"{deal}", file=message_media)
     else:
-        fbafee = fba_fees.get('pickAndPackFee', 'Not Available')
-        fbafee = format_price(fbafee) if fbafee != 'Not Available' else 'Not Available'
+        await client.send_message(destination_entity, f"{deal}")
 
-    return {
-        'Monthly Sales': monthly_sales,
-        'Buy Box': format_price(buybox),
-        '30Buy Box': format_price(buybox30),
-        '90Buy Box': format_price(buybox90),
-        'Sales Rank': salesrank,
-        '30Sales Rank': salesrank30,
-        '90Sales Rank': salesrank90,
-        'Referral Fee %': referral_fee,
-        'FBA Fee': fbafee,
-    }
-
-def insert_data(worksheet, data):
-    """Insert data into Google Sheets and print update."""
-    batch_size = 100  # Adjust batch size based on your quota and needs
-    for i in range(0, len(data), batch_size):
-        batch = data[i:i + batch_size]
-        worksheet.append_rows([list(item.values()) for item in batch])
-        print(f"Update: Data inserted into Google Sheet ({worksheet.title}) at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        time.sleep(15)  # Pause after each batch insert
-
-async def process_deals(url, worksheet_name):
-    """Process deals from a given URL asynchronously and update Google Sheets."""
-    print(f'Processing deals for {worksheet_name}...')
-    response = await fetch_data(None, url)
-    asins = [deal['asin'] for deal in response['deals']['dr']]
-    worksheet = sheet.worksheet(worksheet_name)
-    existing_asins = get_existing_asins(worksheet)
-    new_data = []
-
-    batch_size = 50  # Adjust batch size based on API and performance requirements
-    for i in range(0, len(asins), batch_size):
-        batch_asins = asins[i:i + batch_size]
-        tasks = []
-        for domain in domains:
-            tasks.append(get_keepa_data(batch_asins, domain))
-
-        products = await asyncio.gather(*tasks)
-
-        for asin in batch_asins:
-            product_data = {}
-            for product in products:
-                for p in product:
-                    if p['asin'] == asin:
-                        product_data[p['asin']] = extract_data(p)
-                        break
-
-            if product_data:
-                new_data.extend(list(product_data.values()))
-                await asyncio.sleep(1)  # Add a small delay between each batch request to avoid rate limiting
-
-    if new_data:
-        insert_data(worksheet, new_data)
-
-    print(f'Deals processing completed for {worksheet_name}')
-    print('Pause for 30 seconds...')
-    await asyncio.sleep(30)  # Pause between each cycle
-
-async def main():
-    usa_url = "https://api.keepa.com/deal?key=277a5p3cih7dokukn13qnr2pp40i3vnb1mhctd3b9eeogq1ol9bh6012qbeelk5j&selection=%7B%22page%22%3A0%2C%22domainId%22%3A%221%22%2C%22excludeCategories%22%3A%5B%5D%2C%22includeCategories%22%3A%5B%5D%2C%22priceTypes%22%3A%5B1%5D%2C%22deltaRange%22%3A%5B0%2C2147483647%5D%2C%22deltaPercentRange%22%3A%5B20%2C2147483647%5D%2C%22salesRankRange%22%3A%5B-1%2C-1%5D%2C%22currentRange%22%3A%5B0%2C2147483647%5D%2C%22minRating%22%3A-1%2C%22isLowest%22%3Afalse%2C%22isLowest90%22%3Afalse%2C%22isLowestOffer%22%3Afalse%2C%22isOutOfStock%22%3Afalse%2C%22titleSearch%22%3A%22%22%2C%22isRangeEnabled%22%3Atrue%2C%22isFilterEnabled%22%3Atrue%2C%22filterErotic%22%3Atrue%2C%22singleVariation%22%3Afalse%2C%22hasReviews%22%3Afalse%2C%22isPrimeExclusive%22%3Afalse%2C%22mustHaveAmazonOffer%22%3Afalse%2C%22mustNotHaveAmazonOffer%22%3Afalse%2C%22sortType%22%3A1%2C%22dateRange%22%3A%220%22%2C%22warehouseConditions%22%3A%5B2%2C3%2C4%2C5%5D%7D"
-    canada_url = "https://api.keepa.com/deal?key=277a5p3cih7dokukn13qnr2pp40i3vnb1mhctd3b9eeogq1ol9bh6012qbeelk5j&selection=%7B%22page%22%3A0%2C%22domainId%22%3A%226%22%2C%22excludeCategories%22%3A%5B%5D%2C%22includeCategories%22%3A%5B%5D%2C%22priceTypes%22%3A%5B1%5D%2C%22deltaRange%22%3A%5B0%2C2147483647%5D%2C%22deltaPercentRange%22%3A%5B20%2C2147483647%5D%2C%22salesRankRange%22%3A%5B-1%2C-1%5D%2C%22currentRange%22%3A%5B0%2C2147483647%5D%2C%22minRating%22%3A-1%2C%22isLowest%22%3Afalse%2C%22isLowest90%22%3Afalse%2C%22isLowestOffer%22%3Afalse%2C%22isOutOfStock%22%3Afalse%2C%22titleSearch%22%3A%22%22%2C%22isRangeEnabled%22%3Atrue%2C%22isFilterEnabled%22%3Atrue%2C%22filterErotic%22%3Atrue%2C%22singleVariation%22%3Afalse%2C%22hasReviews%22%3Afalse%2C%22isPrimeExclusive%22%3Afalse%2C%22mustHaveAmazonOffer%22%3Afalse%2C%22mustNotHaveAmazonOffer%22%3Afalse%2C%22sortType%22%3A1%2C%22dateRange%22%3A%220%22%2C%22warehouseConditions%22%3A%5B2%2C3%2C4%2C5%5D%7D"
-
-    tasks = [
-        process_deals(usa_url, 'USA Deals'),
-        process_deals(canada_url, 'Canada Deals')
-    ]
-
-    await asyncio.gather(*tasks)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+# Start the client
+with client:
+    client.run_until_disconnected()
