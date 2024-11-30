@@ -9,7 +9,7 @@ session_name = 'sessoinx7c'
 # Define a list of source channel usernames
 source_channel_usernames = ['USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
 
-destination_channel_id = 123456789  # Replace with the destination channel's chat ID
+destination_channel_id = -1002460524303  # Replace with the destination channel's chat ID
 
 # Create a TelegramClient instance
 client = TelegramClient(session_name, api_id, api_hash)
