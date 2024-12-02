@@ -1,6 +1,8 @@
 import re
 import requests
 from telethon.sync import TelegramClient, events
+from datetime import datetime
+import asyncio
 
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
@@ -188,6 +190,7 @@ async def handle_message(event):
     # Send the message to the destination channel without downloading media
     if message_media:
         await client.send_message(destination_entity, f"{deal}", file=message_media)
+        await asyncio.sleep(150)  # Wait for 150 seconds
     else:
         await client.send_message(destination_entity, f"{deal}")
 
