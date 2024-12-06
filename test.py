@@ -4,10 +4,19 @@ from telethon.sync import TelegramClient, events
 from datetime import datetime, timedelta
 import asyncio
 from datetime import timezone
+import google.generativeai as genai
+
+# Configure the API key for Gemini
+genai.configure(api_key='AIzaSyC66HQzns-fRh9YR_OviRVDqv4XI5t2JAo')
+
+# Initialize a Gemini model appropriate for your use case
+model = genai.GenerativeModel('models/gemini-1.5-flash')
+# Keepa API key
+API_KEY = '8fjl8kv6hd0q66k3lvbvnpmdtrjgld8dccd0deomgs4b9m5e1q4oghdmifb1v4qs'
 
 api_id = 24277666
 api_hash = '35a4de7f68fc2e5609b7e468317a1e37'
-session_name = 'sessoinx7c'
+session_name = 'sessionx7c'
 
 # Define a list of source channel usernames
 source_channel_usernames = ['USA_Deals_and_Coupons', 'xchannnal']  # Add your source channel usernames here
@@ -17,6 +26,34 @@ destination_channel_id = -1002460524303  # Replace with the destination channel'
 # Create a TelegramClient instance
 client = TelegramClient(session_name, api_id, api_hash)
 print('Connected')
+
+
+
+# Function to fetch product title using Keepa API
+def fetch_title_from_keepa(asin):
+    """Fetch the product title using the Keepa API."""
+    try:
+        response = requests.get(
+            f"https://api.keepa.com/product?key={API_KEY}&domain=1&asin={asin}"
+        )
+        data = response.json()
+        if "products" in data and data["products"]:
+            return data["products"][0].get("title", "Product")
+    except Exception as e:
+        print(f"Error fetching title from Keepa: {e}")
+    return "Product"
+
+def generate_caption(title):
+    directions_list_prompt = f"""
+    Create a 5-6 word catchy caption for a product titled: {title} which should represent the title and these (🔥🔥) should be placed around the title.
+    Don't add any extra tag to caption. Only return clean caption and caption should be in bold.
+    """
+
+    # Generate the response using the model
+    response = model.generate_content([directions_list_prompt])
+    
+    # Return the generated content as a string
+    return response.text
 
 # Function to modify links in the deal message
 def modify_links_in_deal(deal):
@@ -58,10 +95,10 @@ def expand_short_link(short_link):
             position = len(expanded_link)
 
         modified_link = expanded_link[:position]
-        return modified_link
+        return modified_link, match.group() if match else None
     except Exception as e:
         print(f"Error expanding short link: {e}")
-        return short_link
+        return short_link, None
 
 # Function to check for recent messages
 async def has_recent_message(client, channel_id, minutes=2.5):
@@ -89,6 +126,7 @@ async def handle_message(event):
 
     deal = ''
 
+    # Custom logic for specific channels
     if channel_username == 'hcstealdealsUS':
         match = re.search(r'(\d+)% off', message_text)
         if match:
@@ -100,8 +138,8 @@ async def handle_message(event):
                 return
         else:
             return
-        if "coupon" in message_text.lower():
-            deal += "Apply Coupon\n"
+        # if "coupon" in message_text.lower():
+        #     deal += "Apply Coupon\n"
 
     if channel_username == 'USA_Deals_and_Coupons':
         price_matches = re.findall(r'(\d+\.\d{2})\$', message_text)
@@ -116,8 +154,8 @@ async def handle_message(event):
                 return
         else:
             return
-        if "coupon" in message_text.lower():
-            deal += "Apply Coupon\n"
+        # if "coupon" in message_text.lower():
+        #     deal += "Apply Coupon\n"
 
     if channel_username == 'xchannnal':
         print('xchannnal')
@@ -136,23 +174,19 @@ async def handle_message(event):
         if "coupon" in message_text.lower():
             deal += "Apply Coupon\n"
 
+    # Extract and process the link
     match = re.search(r'https?://(?!.*(?:whatsapp|media))\S+', message_text)
     if match:
         found_link = match.group()
-        final_url = found_link
-        if "/?" in final_url:
-            final_url = final_url.replace("/?", "?")
-        if final_url:
-            question_mark_index = final_url.find("?")
-            if question_mark_index != -1:
-                final_url = final_url[:question_mark_index]
-            final_url = final_url + "?linkCode=ml1&tag=muntarily-20"
-            deal += final_url + "\n"
-            ad_data = deal
-            new_text = "STAY ACTIVE - Like this post when you see it 👍 \n"
-            ad_data = new_text + ad_data
-            deal = ad_data
-            deal += "#ad \n"
+        expanded_link, asin = expand_short_link(found_link)
+        if not asin:
+            print("ASIN not found in the link.")
+            return
+
+        title = fetch_title_from_keepa(asin)
+        caption = generate_caption(title)
+
+        deal += f"{caption}\n{expanded_link}?linkCode=ml1&tag=muntarily-20\n#ad\n"
 
     # Check for recent activity in the destination channel
     recent_message_found = await has_recent_message(client, destination_channel_id)
@@ -162,10 +196,10 @@ async def handle_message(event):
 
     # Send the message to the destination channel
     if message_media:
-        await client.send_message(destination_entity, f"{deal}", file=message_media)
+        await client.send_message(destination_entity, deal, file=message_media)
         print('message sent')
     else:
-        await client.send_message(destination_entity, f"{deal}")
+        await client.send_message(destination_entity, deal)
 
 # Start the client
 with client:
