@@ -101,7 +101,7 @@ def expand_short_link(short_link):
         return short_link, None
 
 # Function to check for recent messages
-async def has_recent_message(client, channel_id, minutes=2.5):
+async def has_recent_message(client, channel_id, minutes=1.5):
     try:
         async for message in client.iter_messages(channel_id, limit=5):
             if message.date and (datetime.now(timezone.utc) - message.date).total_seconds() < minutes * 60:
@@ -149,7 +149,7 @@ async def handle_message(event):
             price_difference = price2 - price1
             percentage_reduction = int((price_difference / price2) * 100)
             if percentage_reduction >= 2:
-                deal += f"About {percentage_reduction}% off 🔥\n"
+                deal += f"{percentage_reduction}% off 🔥\n"
             else:
                 return
         else:
@@ -166,7 +166,7 @@ async def handle_message(event):
             price_difference = price2 - price1
             percentage_reduction = int((price_difference / price2) * 100)
             if percentage_reduction >= 25:
-                deal += f"About {percentage_reduction}% off 🔥\n"
+                deal += f"{percentage_reduction}% off 🔥\n"
             else:
                 return
         else:
