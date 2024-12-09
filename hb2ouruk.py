@@ -99,7 +99,7 @@ async def handle_message(event):
     # Apply additional logic for the 'hcstealdealsUS' channel
     if channel_username == 'hugebargainsuk':
         # Check if the message text contains a number followed by '%'
-        updated_text = re.sub(r'hugebargains-21', 'tk0f3-21', message_text)
+        updated_text = re.sub(r'hugebargains-21', 'kays047-21', message_text)
         if updated_text:
             deal = updated_text
             # deal += "\n Join our FB group for Best Deals: https://shorturl.at/uHY59 \n"
