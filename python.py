@@ -123,7 +123,7 @@ def send_to_group(ad_data):
             # if 'products' in data and len(data['products']) > 0:
             #     product = data['products'][0]
             #     title = product.get('title', 'No title available')
-            #     ad_data = f"{title} \n\n{ad_data}"
+            #     ad_data = f"{title} \n{ad_data}"
             # else:
             #     title = "No title fetched"
             
