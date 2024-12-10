@@ -7,7 +7,7 @@ from datetime import timezone
 import google.generativeai as genai
 
 # Configure the API key for Gemini
-genai.configure(api_key='AIzaSyCPVRCxUzKgvAG3BnQiWP33XppuFLLfQn4')
+genai.configure(api_key='AIzaSyDnTRRkAMtYiQ1ao-2zcb8v1ZHJ0Z4AYPc')
 
 # Initialize a Gemini model appropriate for your use case
 model = genai.GenerativeModel('models/gemini-1.5-flash')
