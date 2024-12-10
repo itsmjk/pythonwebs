@@ -111,7 +111,7 @@ def send_to_group(ad_data):
             ad_position = ad_data.find("#ad")
             if ad_position != -1:
                 # Insert title before "#ad"
-                ad_data = ad_data[:ad_position] + "\n" + title + "\n\n" + ad_data[ad_position:]
+                ad_data = ad_data[:ad_position] + "\n" + title + "\n" + ad_data[ad_position:]
                 
             # url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
 
@@ -123,7 +123,7 @@ def send_to_group(ad_data):
             # if 'products' in data and len(data['products']) > 0:
             #     product = data['products'][0]
             #     title = product.get('title', 'No title available')
-            #     ad_data = f"{title} \n{ad_data}"
+            #     ad_data = f"{title} \n\n{ad_data}"
             # else:
             #     title = "No title fetched"
             
