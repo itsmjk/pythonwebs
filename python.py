@@ -89,6 +89,30 @@ def send_to_group(ad_data):
         for_our_group = ad_data.replace("hugebargains-21", "tk0f3-21")
         
         if not message_exists:
+
+            api_key = '8fjl8kv6hd0q66k3lvbvnpmdtrjgld8dccd0deomgs4b9m5e1q4oghdmifb1v4qs'
+            url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
+
+            try:
+                response = requests.get(url)
+                data = response.json()
+
+                # Check if the request was successful and contains product data
+                if 'products' in data and len(data['products']) > 0:
+                    product = data['products'][0]
+                    title = product.get('title', 'No title available')
+                else:
+                    print("No product data found")
+
+            except requests.exceptions.RequestException as e:
+                print(f"Error fetching product details: {e}")
+
+            # Find the position of "#ad" in ad_data
+            ad_position = ad_data.find("#ad")
+            if ad_position != -1:
+                # Insert title before "#ad"
+                ad_data = ad_data[:ad_position] + "\n" + title + "\n\n" + ad_data[ad_position:]
+                
             # url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
 
             # # Make the API request
