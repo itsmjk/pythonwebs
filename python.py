@@ -85,8 +85,8 @@ def send_to_group(ad_data):
         # Check if the link exists in the last messages within the last 60 minutes
         message_exists = any(link in message.text for message in all_last_messages)
         # Replace "hugebargains-21" with "ukdeals27-21"
-        for_channel = ad_data.replace("hugebargains-21", "tk0f3-21")
-        for_our_group = ad_data.replace("hugebargains-21", "tk0f3-21")
+        for_channel = ad_data.replace("hugebargains-21", "kays047-21")
+        for_our_group = ad_data.replace("hugebargains-21", "kays047-21")
         
         if not message_exists:
 
