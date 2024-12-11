@@ -111,7 +111,7 @@ def send_to_group(ad_data):
             ad_position = ad_data.find("#ad")
             if ad_position != -1:
                 # Insert title before "#ad"
-                ad_data = ad_data[:ad_position] + "\n" + title + "\n" + ad_data[ad_position:]
+                ad_data = ad_data[:ad_position] + title + "\n" + ad_data[ad_position:]
                 
             # url = f'https://api.keepa.com/product?key={api_key}&domain=2&asin={asin}'
 
