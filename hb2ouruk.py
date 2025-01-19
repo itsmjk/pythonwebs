@@ -179,7 +179,8 @@ async def handle_message(event):
     # Send the message to the destination channel without downloading media
     if message_text:
         await client.send_message(destination_entity, f"{deal}")
-        await client.send_message(destination_entity2, f"{deal}")
+        modified_deal = deal.replace('kays047-21', 'tk0f3-21')
+        await client.send_message(destination_entity2, f"{modified_deal}")
         # await client.send_message(destination_entity2, f"{deal}", file=message_media)
     else:
         await client.send_message(destination_entity, f"{deal}")
