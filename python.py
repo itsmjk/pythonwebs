@@ -150,10 +150,10 @@ def send_to_group(ad_data):
             # client.send_file(telegram_group_id, image_url, caption=ad_data)
             print("Message sent to the group.")
             # time.sleep(7)
-            client.send_message(mychannel, for_channel)
-            print("Message sent to the Channel.")
-            client.send_message(ourtelgroup_id, for_our_group)
-            print("Message sent to our group.")
+            # client.send_message(mychannel, for_channel)
+            # print("Message sent to the Channel.")
+            # client.send_message(ourtelgroup_id, for_our_group)
+            # print("Message sent to our group.")
         else:
             print("Message already exists in the last messages of the group and channel within the last 60 minutes. Skipping.")
     except Exception as e:
